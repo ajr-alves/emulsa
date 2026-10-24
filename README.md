@@ -103,7 +103,7 @@ Works on Windows, macOS (Apple Silicon and Intel) and Linux with Python 3.11 or 
 
 Every build can check itself with `Emulsa --self-test`.
 
-On GitHub, `.github/workflows/build.yml` runs on every push. It first runs the safety checks: the unit tests, a security scan of the code ([bandit](https://bandit.readthedocs.io/)) and a check of every dependency against known vulnerabilities ([pip-audit](https://pypi.org/project/pip-audit/)). Then it builds and self-tests the Windows, macOS and Linux apps. Push a tag such as `v0.3.0` to attach all three to a release.
+On GitHub, `.github/workflows/build.yml` runs on every push. It first runs the safety checks: the unit tests, a security scan of the code ([bandit](https://bandit.readthedocs.io/)) and a check of every dependency against known vulnerabilities ([pip-audit](https://pypi.org/project/pip-audit/)). Then it builds and self-tests the Windows, macOS and Linux apps. When the version number in `emulsa/__init__.py` changes, the next push to `main` publishes a release with all three installers attached.
 
 ## How the looks work
 
