@@ -1,47 +1,181 @@
 """Small custom widgets: the photo canvas, sliders, collapsible sections and the assistant bubble."""
 from __future__ import annotations
 
-from PySide6.QtCore import QPointF, QRectF, QSize, Qt, Signal
+from PySide6.QtCore import QEvent, QPointF, QRectF, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPainterPath, QPen
-from PySide6.QtWidgets import (QAbstractButton, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QSlider, QToolButton,
+from PySide6.QtWidgets import (QAbstractButton, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QPushButton, QSlider, QToolButton,
                                QVBoxLayout, QWidget)
 
 from . import icons, theme
 
 
 class PreviewView(QWidget):
-    """The graded photo, fitted to the space. Shows the original while ``show_original`` is on."""
+    """The photo canvas. Fits the photo by default; zoom with the wheel, a trackpad pinch or a double-click,
+    drag to look around. When zoomed in past the preview's own resolution it asks (``detail_needed``)
+    for a full-resolution tile of the visible area, which is painted over the preview.
+    Shows the original instead of the graded image while ``show_original`` is on."""
     files_dropped = Signal(list)
+    open_photos = Signal()
+    open_folder = Signal()
+    zoom_changed = Signal(object)          # None for fit, else 1.0 = 100 %
+    detail_needed = Signal(QRectF, float)  # visible area in 0..1 image coords, full-image px per screen px
+
+    MAX_ZOOM = 8.0
+    MARGIN = 28
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setAcceptDrops(True)
         self.setMinimumSize(320, 240)
         self.setFocusPolicy(Qt.StrongFocus)
+        self.setMouseTracking(True)
         self.graded: QImage | None = None
         self.original: QImage | None = None
+        self.tile = None                   # (QRectF normalised area, graded QImage, original QImage)
+        self.full_size = None              # (w, h) of the full-resolution photo
         self.show_original = False
         self.busy = False
         self.dragging = False
-        self.title = "Drop photos here"
-        self.message = "or open a folder. JPEG, PNG, TIFF and RAW files work."
+        self.zoom = None                   # None = fit to window
+        self.center = QPointF(0.5, 0.5)
+        self._pan_from = None
+        self.title = "Drop photos or a folder here"
+        self.message = "JPEG, PNG, TIFF and RAW files work."
+        self.badge_until = 0
+        self.photos_btn = QPushButton("Choose photos", self)
+        self.photos_btn.setObjectName("secondary")
+        self.photos_btn.clicked.connect(self.open_photos.emit)
+        self.folder_btn = QPushButton("Choose a folder", self)
+        self.folder_btn.setObjectName("primary")
+        self.folder_btn.clicked.connect(self.open_folder.emit)
+        for b in (self.photos_btn, self.folder_btn):
+            b.setCursor(Qt.PointingHandCursor)
+        self._sync_empty_buttons()
 
+    # ------------------------------------------------------------------ content
     def set_images(self, graded: QImage | None = None, original: QImage | None = None):
         if graded is not None:
             self.graded = graded
         if original is not None:
             self.original = original
+        self._sync_empty_buttons()
+        self.update()
+
+    def set_photo(self, original: QImage, full_size):
+        """A new photo: reset the view to fit and forget any detail tile."""
+        self.original, self.graded, self.tile = original, None, None
+        self.full_size = full_size if full_size and full_size[0] > 0 else (original.width(), original.height())
+        self.zoom, self.center = None, QPointF(0.5, 0.5)
+        self.zoom_changed.emit(None)
+        self._sync_empty_buttons()
+        self.update()
+
+    def set_tile(self, tile):
+        self.tile = tile
         self.update()
 
     def clear(self, title: str, message: str = ""):
-        self.graded = self.original = None
+        self.graded = self.original = self.tile = None
+        self.full_size = None
+        self.zoom = None
         self.title, self.message = title, message
+        self._sync_empty_buttons()
         self.update()
 
     def set_show_original(self, on: bool):
         self.show_original = on
         self.update()
 
+    # ------------------------------------------------------------------ geometry
+    def _dims(self):
+        fw, fh = self.full_size or (self.original.width(), self.original.height())
+        return float(fw), float(fh)
+
+    def fit_scale(self) -> float:
+        fw, fh = self._dims()
+        area = self.rect().adjusted(self.MARGIN, self.MARGIN, -self.MARGIN, -self.MARGIN)
+        return max(1e-6, min(area.width() / fw, area.height() / fh))
+
+    def scale(self) -> float:
+        """Screen (logical) px per full-image px."""
+        if self.zoom is None:
+            return self.fit_scale()
+        return self.zoom / max(self.devicePixelRatioF(), 1.0)
+
+    def image_rect(self) -> QRectF:
+        fw, fh = self._dims()
+        s = self.scale()
+        w, h = fw * s, fh * s
+        if self.zoom is None:
+            return QRectF((self.width() - w) / 2, (self.height() - h) / 2, w, h)
+        x = self.width() / 2 - self.center.x() * w
+        y = self.height() / 2 - self.center.y() * h
+        return QRectF(x, y, w, h)
+
+    def _clamp_center(self):
+        fw, fh = self._dims()
+        s = self.scale()
+        w, h = fw * s, fh * s
+        cx, cy = self.center.x(), self.center.y()
+        hx = self.width() / 2 / w if w else 0.5
+        hy = self.height() / 2 / h if h else 0.5
+        cx = 0.5 if w <= self.width() else min(max(cx, hx), 1 - hx)
+        cy = 0.5 if h <= self.height() else min(max(cy, hy), 1 - hy)
+        self.center = QPointF(cx, cy)
+
+    def visible_area(self) -> QRectF:
+        r = self.image_rect()
+        vis = r.intersected(QRectF(self.rect()))
+        if r.width() <= 0 or vis.isEmpty():
+            return QRectF(0, 0, 1, 1)
+        return QRectF((vis.x() - r.x()) / r.width(), (vis.y() - r.y()) / r.height(),
+                      vis.width() / r.width(), vis.height() / r.height())
+
+    def set_zoom(self, zoom, anchor: QPointF | None = None):
+        """zoom: None to fit, else 1.0 = 100 %. anchor: the widget point that stays still."""
+        if self.original is None:
+            return
+        fit_zoom = self.fit_scale() * max(self.devicePixelRatioF(), 1.0)
+        if zoom is not None:
+            zoom = min(self.MAX_ZOOM, zoom)
+            if zoom <= fit_zoom * 1.001:
+                zoom = None
+        if anchor is not None and zoom is not None:
+            r = self.image_rect()
+            nx = (anchor.x() - r.x()) / r.width()
+            ny = (anchor.y() - r.y()) / r.height()
+            old_zoom = self.zoom
+            self.zoom = zoom
+            fw, fh = self._dims()
+            s = self.scale()
+            # keep the image point under the anchor where it is
+            self.center = QPointF(nx - (anchor.x() - self.width() / 2) / (fw * s),
+                                  ny - (anchor.y() - self.height() / 2) / (fh * s))
+            if old_zoom is None and not (0 <= nx <= 1 and 0 <= ny <= 1):
+                self.center = QPointF(0.5, 0.5)
+        else:
+            self.zoom = zoom
+        self._clamp_center()
+        import time
+        self.badge_until = time.monotonic() + 1.2
+        QTimer.singleShot(1250, self.update)
+        self.zoom_changed.emit(self.zoom)
+        self._request_detail()
+        self.update()
+
+    def current_zoom(self) -> float:
+        return self.scale() * max(self.devicePixelRatioF(), 1.0)
+
+    def _request_detail(self):
+        if self.original is None:
+            return
+        fw, _ = self._dims()
+        preview_px_per_full_px = self.original.width() / fw
+        screen_px_per_full_px = self.current_zoom()
+        if screen_px_per_full_px > preview_px_per_full_px * 1.05:
+            self.detail_needed.emit(self.visible_area(), screen_px_per_full_px)
+
+    # ------------------------------------------------------------------ painting
     def paintEvent(self, event):
         p = QPainter(self)
         p.fillRect(self.rect(), theme.qc("canvas"))
@@ -49,41 +183,136 @@ class PreviewView(QWidget):
         if img is None:
             self._empty(p)
             return
-        margin = 28
-        area = self.rect().adjusted(margin, margin, -margin, -margin)
-        s = min(area.width() / img.width(), area.height() / img.height())
-        w, h = img.width() * s, img.height() * s
-        target = QRectF(area.x() + (area.width() - w) / 2, area.y() + (area.height() - h) / 2, w, h)
         p.setRenderHint(QPainter.SmoothPixmapTransform, True)
-        p.drawImage(target, img)
+        target = self.image_rect()
+        self._draw_part(p, img, target, QRectF(0, 0, 1, 1))
+        if self.tile is not None and self.zoom is not None:
+            area, graded, original = self.tile
+            tile_img = original if self.show_original else graded
+            if tile_img is not None:
+                self._draw_part(p, tile_img, target, area)
         if self.show_original:
-            self._badge(p, target, "Original")
+            self._badge(p, QPointF(14, 14), "Original")
+        import time
+        if time.monotonic() < self.badge_until:
+            text = "Fit" if self.zoom is None else f"{round(self.current_zoom() * 100)}%"
+            self._badge(p, QPointF(14, self.height() - 40), text)
+
+    def _draw_part(self, p, img, target: QRectF, area: QRectF):
+        """Draw ``img`` (which shows the normalised ``area`` of the photo) where it belongs inside ``target``,
+        only the part that is on screen."""
+        dest = QRectF(target.x() + area.x() * target.width(), target.y() + area.y() * target.height(),
+                      area.width() * target.width(), area.height() * target.height())
+        vis = dest.intersected(QRectF(self.rect()))
+        if vis.isEmpty() or dest.width() <= 0:
+            return
+        sx = img.width() / dest.width()
+        sy = img.height() / dest.height()
+        src = QRectF((vis.x() - dest.x()) * sx, (vis.y() - dest.y()) * sy, vis.width() * sx, vis.height() * sy)
+        p.drawImage(vis, img, src)
+
+    def _empty_box(self) -> QRectF:
+        r = self.rect()
+        return QRectF(r.center().x() - 190, r.center().y() - 110, 380, 220)
 
     def _empty(self, p: QPainter):
-        r = self.rect().adjusted(40, 40, -40, -40)
-        box = QRectF(r.center().x() - 170, r.center().y() - 90, 340, 180)
+        box = self._empty_box()
         pen = QPen(theme.qc("accent" if self.dragging else "faint"), 1.5, Qt.DashLine)
         p.setRenderHint(QPainter.Antialiasing)
         p.setPen(pen)
-        p.setBrush(Qt.NoBrush)
+        p.setBrush(theme.qc("accent_soft") if self.dragging else Qt.NoBrush)
         p.drawRoundedRect(box, 14, 14)
-        icons.icon("image", 28, "faint").paint(p, int(box.center().x() - 14), int(box.y() + 34), 28, 28)
+        icons.icon("image", 28, "faint").paint(p, int(box.center().x() - 14), int(box.y() + 30), 28, 28)
         f = QFont(self.font()); f.setPointSizeF(f.pointSizeF() + 2); f.setBold(True)
         p.setFont(f); p.setPen(theme.qc("text"))
-        p.drawText(QRectF(box.x(), box.y() + 74, box.width(), 26), Qt.AlignCenter, self.title)
+        p.drawText(QRectF(box.x(), box.y() + 68, box.width(), 26), Qt.AlignCenter, self.title)
         p.setFont(self.font()); p.setPen(theme.qc("muted"))
-        p.drawText(QRectF(box.x() + 20, box.y() + 102, box.width() - 40, 50), Qt.AlignHCenter | Qt.TextWordWrap, self.message)
+        p.drawText(QRectF(box.x() + 20, box.y() + 96, box.width() - 40, 40), Qt.AlignHCenter | Qt.TextWordWrap, self.message)
 
-    def _badge(self, p, target, text):
+    def _sync_empty_buttons(self):
+        empty = self.original is None and self.graded is None
+        for b in (self.photos_btn, self.folder_btn):
+            b.setVisible(empty)
+        if empty:
+            box = self._empty_box()
+            self.photos_btn.adjustSize(); self.folder_btn.adjustSize()
+            gap = 10
+            total = self.photos_btn.width() + gap + self.folder_btn.width()
+            x = int(box.center().x() - total / 2)
+            y = int(box.bottom() - 56)
+            self.photos_btn.move(x, y)
+            self.folder_btn.move(x + self.photos_btn.width() + gap, y)
+        self.setCursor(Qt.PointingHandCursor if empty else Qt.ArrowCursor)
+
+    def resizeEvent(self, e):
+        self._sync_empty_buttons()
+        if self.zoom is not None:
+            self._clamp_center()
+            self._request_detail()
+        super().resizeEvent(e)
+
+    def _badge(self, p, at: QPointF, text):
         f = QFont(self.font()); f.setBold(True)
         p.setFont(f)
-        r = QRectF(target.x() + 12, target.y() + 12, 84, 26)
+        w = max(64, p.fontMetrics().horizontalAdvance(text) + 24)
+        r = QRectF(at.x(), at.y(), w, 26)
         p.setRenderHint(QPainter.Antialiasing)
         p.setPen(Qt.NoPen)
         p.setBrush(QColor(0, 0, 0, 140))
         p.drawRoundedRect(r, 13, 13)
         p.setPen(QColor("#ffffff"))
         p.drawText(r, Qt.AlignCenter, text)
+
+    # ------------------------------------------------------------------ mouse, wheel, pinch
+    def mousePressEvent(self, e):
+        if self.original is None:
+            if e.button() == Qt.LeftButton and self._empty_box().contains(e.position()):
+                self.open_folder.emit()
+            return
+        if e.button() == Qt.LeftButton and self.zoom is not None:
+            self._pan_from = (e.position(), QPointF(self.center))
+            self.setCursor(Qt.ClosedHandCursor)
+
+    def mouseMoveEvent(self, e):
+        if self._pan_from is not None:
+            start, c0 = self._pan_from
+            r = self.image_rect()
+            d = e.position() - start
+            self.center = QPointF(c0.x() - d.x() / r.width(), c0.y() - d.y() / r.height())
+            self._clamp_center()
+            self.update()
+        elif self.original is not None:
+            self.setCursor(Qt.OpenHandCursor if self.zoom is not None else Qt.ArrowCursor)
+
+    def mouseReleaseEvent(self, e):
+        if self._pan_from is not None:
+            self._pan_from = None
+            self.setCursor(Qt.OpenHandCursor)
+            self._request_detail()
+
+    def mouseDoubleClickEvent(self, e):
+        if self.original is None:
+            return
+        self.set_zoom(None if self.zoom is not None else 1.0, e.position())
+
+    def wheelEvent(self, e):
+        if self.original is None:
+            return
+        steps = e.angleDelta().y() / 120.0 or e.pixelDelta().y() / 60.0
+        if not steps:
+            return
+        self.set_zoom(self.current_zoom() * (1.25 ** steps), e.position())
+        e.accept()
+
+    def event(self, e):
+        if e.type() == QEvent.NativeGesture and self.original is not None:
+            if e.gestureType() == Qt.ZoomNativeGesture:
+                self.set_zoom(self.current_zoom() * (1.0 + e.value()), e.position())
+                return True
+            if e.gestureType() == Qt.SmartZoomNativeGesture:
+                self.set_zoom(None if self.zoom is not None else 1.0, e.position())
+                return True
+        return super().event(e)
 
     def dragEnterEvent(self, e):
         if e.mimeData().hasUrls():

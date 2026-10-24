@@ -51,6 +51,21 @@ def _self_test() -> int:
         return 0 if imageio.rawpy is not None else 1
 
 
+def app_icon():
+    """All the icon sizes, so the taskbar and title bar get the crisp small e, not a shrunk big one."""
+    from PySide6.QtGui import QIcon
+    assets = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    icon = QIcon()
+    ico = os.path.join(assets, "emulsa.ico")       # 16-256 px, simplified at 16-32
+    if os.path.exists(ico):
+        icon.addFile(ico)
+    for name in ("emulsa-small.png", "emulsa-512.png"):
+        path = os.path.join(assets, name)
+        if os.path.exists(path):
+            icon.addFile(path)
+    return icon
+
+
 def main():
     if "--self-test" in sys.argv:
         sys.exit(_self_test())
@@ -62,16 +77,21 @@ def main():
     from emulsa.ui import theme
     from emulsa.ui.main_window import MainWindow
 
+    if sys.platform == "win32":
+        # an explicit app ID makes the taskbar use Emulsa's own icon and group its windows,
+        # and matches the ID on the Start menu shortcut the installer creates
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("ajr-alves.Emulsa")
+        except Exception:  # nosec B110 - cosmetic only
+            pass
     app = QApplication(sys.argv)
     app.setApplicationName("Emulsa")
     app.setOrganizationName("Emulsa")
     app.setStyle("Fusion")
     store = Store()
     theme.apply(store.get("appearance", "system"))
-    here = os.path.dirname(os.path.abspath(__file__))
-    icon = os.path.join(here, "assets", "emulsa.png")
-    if os.path.exists(icon):
-        app.setWindowIcon(QIcon(icon))
+    app.setWindowIcon(app_icon())
     from emulsa.ui.splash import Splash
     animate = store.get("startup_animation", True) and "--no-splash" not in sys.argv
     splash = None

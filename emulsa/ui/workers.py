@@ -5,7 +5,7 @@ import os
 import traceback
 
 import numpy as np
-from PySide6.QtCore import QObject, QRunnable, QThread, Signal
+from PySide6.QtCore import QObject, QRectF, QRunnable, QThread, Signal
 from PySide6.QtGui import QImage
 
 from .. import imageio
@@ -58,6 +58,30 @@ def preview_job(path: str) -> Job:
 
 def render_job(token: int, img: np.ndarray, params: dict, strength: float, scale: float) -> Job:
     return Job(token, lambda: to_qimage(render(img, params, strength=strength, scale=scale)))
+
+
+def detail_job(token, full_u8, area, screen_per_full, params, strength) -> Job:
+    """Grade the visible part of the full-resolution photo for zooming. ``area`` is (x, y, w, h) in 0..1."""
+    def run():
+        h, w = full_u8.shape[:2]
+        x0, y0, aw, ah = area
+        # a little margin so small pans don't show the blurry preview at the edges
+        mx, my = aw * 0.15, ah * 0.15
+        x0, y0 = max(0.0, x0 - mx), max(0.0, y0 - my)
+        x1, y1 = min(1.0, x0 + aw + 2 * mx), min(1.0, y0 + ah + 2 * my)
+        px0, py0, px1, py1 = int(x0 * w), int(y0 * h), max(int(x0 * w) + 1, int(round(x1 * w))), max(int(y0 * h) + 1, int(round(y1 * h)))
+        crop = full_u8[py0:py1, px0:px1]
+        if screen_per_full < 1.0:   # zoomed in, but still below 100 %: no need for every pixel
+            from PIL import Image
+            img = Image.fromarray(crop)
+            img = img.resize((max(1, round(crop.shape[1] * screen_per_full)), max(1, round(crop.shape[0] * screen_per_full))),
+                             Image.LANCZOS)
+            crop = np.asarray(img)
+        arr = crop.astype(np.float32) / 255.0
+        graded = render(arr, params, strength=strength, scale=min(1.0, screen_per_full))
+        real = QRectF(px0 / w, py0 / h, (px1 - px0) / w, (py1 - py0) / h)
+        return real, to_qimage(graded), to_qimage(arr)
+    return Job(token, run)
 
 
 def look_icons_job(token: int, img: np.ndarray, looks: list[dict]) -> Job:

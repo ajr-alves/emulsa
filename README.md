@@ -20,7 +20,8 @@ Emulsa ships with 77 looks: Fuji film simulations, Kodak, Ilford and Cinestill s
 
 ## What it does
 
-- **Opens JPEG, PNG, TIFF and RAW** (Sony .ARW, Canon .CR2/.CR3, Nikon .NEF, Fuji .RAF, .DNG and others).
+- **Opens one photo, a few, or a whole folder**: drop them in or pick them. Works with JPEG, PNG, TIFF and RAW files (Sony .ARW, Canon .CR2/.CR3, Nikon .NEF, Fuji .RAF, .DNG and others).
+- **Zooms in to full resolution.** Scroll or pinch to zoom, drag to move around, double-click for 100%. The look is applied at full detail, RAW included.
 - **Shows every look on your own photo** in the looks list, so you can see the result before you click.
 - **Adjusts any look** with exposure, contrast, highlights, shadows, faded blacks, temperature, tint, saturation, grain, vignette and black & white. Hold the `\` key to compare with the original.
 - **Saves your own versions** as custom looks, and lets you star favourites.
@@ -85,6 +86,11 @@ On a Mac, use `Cmd` instead of `Ctrl`.
 | `F` | Add or remove the current look from favourites |
 | `Ctrl+O` | Open a folder |
 | `Ctrl+Shift+O` | Open individual photos |
+| `Ctrl+0` | Fit the photo to the window |
+| `Ctrl+1` | Zoom to 100% |
+| `Ctrl+=` / `Ctrl+-` | Zoom in / out |
+| Scroll or pinch | Zoom at the cursor (drag to move around) |
+| Double-click the photo | Switch between Fit and 100% |
 | `Ctrl+E` | Export |
 | `Ctrl+K` | Open the look assistant |
 | `Ctrl+Shift+E` | Save the look as a .cube |

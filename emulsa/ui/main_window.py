@@ -25,7 +25,7 @@ from . import icons, theme
 from .chat import ChatPanel
 from .export_dialog import ExportDialog
 from .widgets import AdjustSlider, AssistantBubble, PreviewView, Section
-from .workers import Job, look_icons_job, preview_job, render_job, thumbnail_job, to_qimage
+from .workers import Job, detail_job, look_icons_job, preview_job, render_job, thumbnail_job, to_qimage
 
 LOOK_ROLE = Qt.UserRole + 1
 PATH_ROLE = Qt.UserRole + 2
@@ -124,10 +124,13 @@ class MainWindow(QMainWindow):
         head = QHBoxLayout(); head.setSpacing(8); head.setContentsMargins(4, 0, 0, 0)
         head.addWidget(logo); head.addWidget(name, 1); head.addWidget(self.more_btn)
 
-        self.folder_btn = QPushButton("Open a folder")
-        self.folder_btn.setToolTip(f"Open a folder of photos ({shortcut_text('Ctrl+O')})")
+        self.folder_btn = QPushButton("Open photos")
+        self.folder_btn.setToolTip("Open a folder, one photo or several")
         self.folder_btn.setStyleSheet("text-align: left; padding: 7px 8px;")
-        self.folder_btn.clicked.connect(self._ask_folder)
+        open_menu = QMenu(self.folder_btn)
+        open_menu.addAction(f"Open Folder…\t{shortcut_text('Ctrl+O')}", self._ask_folder)
+        open_menu.addAction(f"Open Photos…\t{shortcut_text('Ctrl+Shift+O')}", self._ask_files)
+        self.folder_btn.setMenu(open_menu)
 
         self.search = QLineEdit(); self.search.setObjectName("search"); self.search.setPlaceholderText("Search looks")
         self.search.setClearButtonEnabled(True); self.search.setAccessibleName("Search looks")
@@ -203,12 +206,28 @@ class MainWindow(QMainWindow):
         self.export_btn = QPushButton("Export"); self.export_btn.setObjectName("primary")
         self.export_btn.setToolTip(f"Export photos with this look ({shortcut_text('Ctrl+E')})")
         self.export_btn.clicked.connect(self._export)
-        tl.addWidget(self.photo_name, 1); tl.addWidget(self.compare_btn); tl.addSpacing(4); tl.addWidget(self.export_btn)
+        self.zoom_btn = QToolButton(); self.zoom_btn.setText("Fit")
+        self.zoom_btn.setToolTip("Zoom (scroll or pinch on the photo, double-click for 100%)")
+        self.zoom_btn.setAccessibleName("Zoom")
+        self.zoom_btn.setPopupMode(QToolButton.InstantPopup)
+        self.zoom_btn.setMinimumWidth(56)
+        self.zoom_btn.setEnabled(False)
+        tl.addWidget(self.photo_name, 1); tl.addWidget(self.zoom_btn); tl.addWidget(self.compare_btn)
+        tl.addSpacing(4); tl.addWidget(self.export_btn)
 
         self.canvas = QWidget()
         cl = QVBoxLayout(self.canvas); cl.setContentsMargins(0, 0, 0, 0)
         self.preview = PreviewView()
         self.preview.files_dropped.connect(self._dropped)
+        self.preview.open_photos.connect(self._ask_files)
+        self.preview.open_folder.connect(self._ask_folder)
+        self.preview.zoom_changed.connect(self._zoom_changed)
+        self.preview.detail_needed.connect(self._detail_needed)
+        self.full_u8 = None          # full-resolution pixels of the current photo, loaded on first zoom
+        self.full_loading = None
+        self.detail_token = 0
+        self.detail_args = None
+        self.detail_timer = QTimer(self, singleShot=True, interval=140, timeout=self._make_detail)
         cl.addWidget(self.preview)
         self.canvas.installEventFilter(self)
 
@@ -304,7 +323,18 @@ class MainWindow(QMainWindow):
             return a
 
         self.a_open = act("Open Folder…", self._ask_folder, "Ctrl+O")
-        self.a_add = act("Add Photos…", self._ask_files, "Ctrl+Shift+O")
+        self.a_add = act("Open Photos…", self._ask_files, "Ctrl+Shift+O")
+        self.a_fit = act("Fit to Window", lambda: self.preview.set_zoom(None), "Ctrl+0")
+        self.a_100 = act("Actual Size (100%)", lambda: self.preview.set_zoom(1.0, self._view_center()), "Ctrl+1")
+        self.a_zin = act("Zoom In", lambda: self.preview.set_zoom(self.preview.current_zoom() * 1.5, self._view_center()), QKeySequence.ZoomIn)
+        self.a_zout = act("Zoom Out", lambda: self.preview.set_zoom(self.preview.current_zoom() / 1.5, self._view_center()), QKeySequence.ZoomOut)
+        zoom_menu = QMenu(self)
+        for a in (self.a_fit, self.a_100):
+            zoom_menu.addAction(a)
+        for pct in (50, 200, 400):
+            zoom_menu.addAction(f"{pct}%", lambda z=pct / 100: self.preview.set_zoom(z, self._view_center()))
+        zoom_menu.addSeparator(); zoom_menu.addAction(self.a_zin); zoom_menu.addAction(self.a_zout)
+        self.zoom_btn.setMenu(zoom_menu)
         self.a_export = act("Export…", self._export, "Ctrl+E")
         self.a_cube = act("Save Look as .cube…", self._export_cube, "Ctrl+Shift+E")
         self.a_fav = act("Favourite Look", self._toggle_current_favourite, "F")
@@ -343,6 +373,9 @@ class MainWindow(QMainWindow):
                 f.addSeparator() if a is None else f.addAction(a)
             v = bar.addMenu("View")
             for a in (self.a_assistant, self.a_sidebar, self.a_inspector):
+                v.addAction(a)
+            v.addSeparator()
+            for a in (self.a_fit, self.a_100, self.a_zin, self.a_zout):
                 v.addAction(a)
             v.addMenu(appearance)
             v.addAction(self.a_splash)
@@ -724,6 +757,8 @@ class MainWindow(QMainWindow):
         else:
             self.current = None
             self.preview_arr = None
+            self.full_u8 = None
+            self.zoom_btn.setEnabled(False)
             self.photo_name.setText("")
 
     def _thumb_ready(self, path, qimg):
@@ -750,8 +785,10 @@ class MainWindow(QMainWindow):
         self.preview_arr = arr
         fw = imageio.full_width(path)
         self.grain_scale = arr.shape[1] / fw if fw else 0.3
-        self.preview.set_images(original=to_qimage(arr))
-        self.preview.graded = None
+        full_size = (fw, round(fw * arr.shape[0] / arr.shape[1])) if fw else None
+        self.full_u8, self.full_loading = None, None
+        self.preview.set_photo(to_qimage(arr), full_size)
+        self.zoom_btn.setEnabled(True)
         n = f"   {self.filmstrip.currentRow() + 1} of {len(self.files)}" if len(self.files) > 1 else ""
         self.photo_name.setText(f"{os.path.basename(path)}{n}")
         self._render()
@@ -761,6 +798,50 @@ class MainWindow(QMainWindow):
         if path == self.current:
             self.preview.clear(f"Couldn't open {os.path.basename(path)}", str(exc))
             self.photo_name.setText("")
+
+    # ================================================================== zoom
+    def _view_center(self):
+        from PySide6.QtCore import QPointF
+        return QPointF(self.preview.width() / 2, self.preview.height() / 2)
+
+    def _zoom_changed(self, zoom):
+        self.zoom_btn.setText("Fit" if zoom is None else f"{round(self.preview.current_zoom() * 100)}%")
+        if zoom is None:
+            self.preview.set_tile(None)
+
+    def _detail_needed(self, area, screen_per_full):
+        self.detail_args = ((area.x(), area.y(), area.width(), area.height()), screen_per_full)
+        self.detail_timer.start()
+
+    def _make_detail(self):
+        if self.detail_args is None or self.current is None or self.preview.zoom is None:
+            return
+        if self.full_u8 is None:
+            if self.full_loading != self.current:     # load the full-resolution pixels once per photo
+                self.full_loading = path = self.current
+                self.photo_name.setText(f"{os.path.basename(path)}   loading full resolution…")
+                job = Job(path, lambda: imageio.load_full_u8(path))
+                job.signals.done.connect(self._full_ready)
+                job.signals.failed.connect(lambda p, exc: self.show_toast(f"Couldn't load full resolution: {exc}"))
+                self.pool.start(job, priority=6)
+            return
+        area, spf = self.detail_args
+        self.detail_token += 1
+        job = detail_job(self.detail_token, self.full_u8, area, spf, copy.deepcopy(self.params), self.strength)
+        job.signals.done.connect(self._detail_ready)
+        self.pool.start(job, priority=8)
+
+    def _full_ready(self, path, arr):
+        if path != self.current:
+            return
+        self.full_u8 = arr
+        n = f"   {self.filmstrip.currentRow() + 1} of {len(self.files)}" if len(self.files) > 1 else ""
+        self.photo_name.setText(f"{os.path.basename(path)}{n}")
+        self._make_detail()
+
+    def _detail_ready(self, token, tile):
+        if token == self.detail_token and self.preview.zoom is not None:
+            self.preview.set_tile(tile)
 
     # ================================================================== rendering
     def _schedule_render(self):
@@ -779,6 +860,9 @@ class MainWindow(QMainWindow):
         if token != self.render_token:
             return
         self.preview.set_images(graded=qimg)
+        if self.preview.zoom is not None:
+            self.preview.set_tile(None)
+            self.preview._request_detail()
 
     def _refresh_icons(self):
         if self.preview_arr is None:

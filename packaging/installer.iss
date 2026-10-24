@@ -3,7 +3,7 @@
 
 #define AppName "Emulsa"
 #ifndef AppVersion
-  #define AppVersion "0.4.0"
+  #define AppVersion "0.5.0"
 #endif
 
 [Setup]
@@ -36,9 +36,9 @@ Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreve
 Source: "..\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\Emulsa.exe"
+Name: "{group}\{#AppName}"; Filename: "{app}\Emulsa.exe"; AppUserModelID: "ajr-alves.Emulsa"
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\Emulsa.exe"; Tasks: desktopicon
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\Emulsa.exe"; Tasks: desktopicon; AppUserModelID: "ajr-alves.Emulsa"
 
 [Run]
 Filename: "{app}\Emulsa.exe"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent

@@ -138,6 +138,21 @@ def load_full(path: str) -> tuple[np.ndarray, bytes | None]:
         return _to_float(img), exif
 
 
+def load_full_u8(path: str) -> np.ndarray:
+    """Full-resolution 8-bit RGB for zooming in: a quarter of the memory of the float version."""
+    if is_raw(path):
+        if rawpy is None:
+            raise RuntimeError("RAW support needs the rawpy package.")
+        with rawpy.imread(path) as raw:
+            return raw.postprocess(use_camera_wb=True, half_size=False, output_bps=8,
+                                   output_color=rawpy.ColorSpace.sRGB, user_flip=None)
+    with Image.open(path) as img:
+        img = ImageOps.exif_transpose(img)
+        if img.mode != "RGB":
+            img = img.convert("RGB")
+        return np.asarray(img, dtype=np.uint8).copy()
+
+
 def resize_long_edge(arr: np.ndarray, long_edge: int | None) -> np.ndarray:
     if not long_edge or max(arr.shape[:2]) <= long_edge:
         return arr
