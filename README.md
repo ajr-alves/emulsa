@@ -29,6 +29,22 @@ Download the file for your computer from the [Releases](../../releases) page.
 
 The warnings appear because the app isn't signed with a paid developer certificate yet. Intel Macs can run Emulsa from source (below).
 
+## Updating
+
+Your favourites, custom looks, settings and assistant key are kept when you update. They're stored in your user folder, not inside the app, so replacing the app never touches them.
+
+1. **Get the new version** from the [Releases](../../releases) page. Between releases, the newest build is under [Actions](../../actions): open the latest run marked ✓ and download the file for your system under **Artifacts** (you need to be signed in to GitHub).
+2. **Install it over the old one:**
+   - **Windows:** close Emulsa and run the new `EmulsaSetup-x.y.z.exe`. It replaces the old version in place, so there's no need to uninstall first.
+   - **macOS:** open the new `.dmg`, drag Emulsa to Applications and choose **Replace**.
+   - **Linux:** replace the old `.AppImage` file with the new one and make it executable again (`chmod +x`).
+3. **Check the version** in the ••• menu → **About Emulsa**.
+
+**If you build Emulsa yourself:**
+
+- **Cloned with git:** run `git pull`, then build again (`build.bat` on Windows) and run the new installer from the `dist` folder.
+- **Downloaded a zip:** download the new zip from the green **Code** button and copy its files over your folder. You can keep `.venv`, `build` and `dist`. Then build again the same way. `build.bat` installs any new requirements on its own.
+
 ## The look assistant
 
 The assistant runs on Claude, using **your own Anthropic API key**, so it costs you nothing beyond your own API usage, typically a few cents per message.
