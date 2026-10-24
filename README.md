@@ -58,6 +58,10 @@ To add or tune a look, edit `emulsa/looks.py`:
 
 Run the tests with `python -m unittest discover -s tests`.
 
+## Thanks
+
+Emulsa wouldn't exist without **[André Domingues (voxivoid)](https://github.com/voxivoid)** and his app [Recipe Lab](https://github.com/voxivoid/recipe-lab-sony-pmca). He worked out how to store film looks inside the Sony A6000 and built the 77 recipes this app starts from, testing them against reference frames on the camera itself. Thank you, André. If you shoot an older Sony that runs camera apps, use Recipe Lab on the camera, and consider [sponsoring his work](https://github.com/sponsors/voxivoid).
+
 ## Credits and licence
 
 MIT licence; see [LICENSE](LICENSE). The recipe values come from Recipe Lab v1.7.0 by André Domingues, released under MIT.
