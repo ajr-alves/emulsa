@@ -85,7 +85,7 @@ Works on Windows, macOS (Apple Silicon and Intel) and Linux with Python 3.11 or 
 
 ## Build the apps
 
-- **Windows:** install [Python](https://www.python.org/downloads/) and [Inno Setup 6](https://jrsoftware.org/isinfo.php), then double-click `build.bat`.
+- **Windows:** install [Python](https://www.python.org/downloads/) and [Inno Setup 6](https://jrsoftware.org/isinfo.php) (either "for all users" or "for me only" works), then double-click `build.bat`. It ends with `dist\EmulsaSetup-x.y.z.exe`; if anything fails, the details are in `build.log`.
 - **macOS:** `pip install -r requirements.txt pyinstaller && pyinstaller packaging/emulsa.spec && bash packaging/make_dmg.sh`
 - **Linux:** `pip install -r requirements.txt pyinstaller && pyinstaller packaging/emulsa.spec && bash packaging/make_appimage.sh`
 
