@@ -26,7 +26,7 @@ def pil_to_qimage(img) -> QImage:
 
 class Signals(QObject):
     done = Signal(object, object)    # (key, result)
-    failed = Signal(object, str)     # (key, message)
+    failed = Signal(object, object)  # (key, exception)
 
 
 class Job(QRunnable):
@@ -43,7 +43,7 @@ class Job(QRunnable):
             result = self.fn()
         except Exception as exc:  # report, never crash the pool
             traceback.print_exc()
-            self.signals.failed.emit(self.key, str(exc))
+            self.signals.failed.emit(self.key, exc)
             return
         self.signals.done.emit(self.key, result)
 
@@ -99,6 +99,8 @@ class ExportThread(QThread):
                 arr = imageio.resize_long_edge(arr, self.long_edge)
                 out = render(arr, self.params, strength=self.strength, scale=arr.shape[1] / full_width, lut=lut)
                 target = os.path.join(self.out_dir, f"{name}{self.suffix}{ext}")
+                if os.path.dirname(os.path.abspath(target)) != os.path.abspath(self.out_dir):
+                    raise ValueError("refusing to write outside the export folder")
                 n = 2
                 while os.path.exists(target):
                     target = os.path.join(self.out_dir, f"{name}{self.suffix}-{n}{ext}")

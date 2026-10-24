@@ -1,5 +1,5 @@
 @echo off
-rem Builds the Windows installer: dist\EmulsaSetup-0.1.0.exe
+rem Builds the Windows installer: dist\EmulsaSetup-0.2.0.exe
 rem Needs Python 3.11+ (python.org) and Inno Setup 6 (jrsoftware.org/isinfo.php).
 setlocal
 cd /d "%~dp0"
@@ -28,7 +28,7 @@ if not exist %ISCC% (
 echo Building the installer...
 %ISCC% packaging\installer.iss || goto :fail
 echo.
-echo Done: dist\EmulsaSetup-0.1.0.exe
+echo Done: dist\EmulsaSetup-0.2.0.exe
 goto :end
 
 :fail

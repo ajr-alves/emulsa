@@ -3,7 +3,7 @@
 
 #define AppName "Emulsa"
 #ifndef AppVersion
-  #define AppVersion "0.1.0"
+  #define AppVersion "0.2.0"
 #endif
 
 [Setup]
@@ -11,7 +11,7 @@ AppId={{6E3C9C2A-6F0B-4C3B-9F3E-5A1E8D7C2B41}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher=Emulsa contributors
-AppPublisherURL=https://github.com/
+AppPublisherURL=https://github.com/ajr-alves/emulsa
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes

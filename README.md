@@ -2,7 +2,7 @@
 
 Film looks for your photos. Pick a look, see it on your photo instantly, tweak it, and export one photo or a whole folder.
 
-![Emulsa main window](docs/screenshot.png)
+![Emulsa with the look assistant open](docs/screenshot.png)
 
 Emulsa ships with 77 looks: Fuji film simulations, Kodak, Ilford and Cinestill stocks, Ricoh GR, Leica, Canon, Nikon and more. They started life as in-camera recipes for Sony cameras (from [Recipe Lab](https://github.com/voxivoid/recipe-lab-sony-pmca/tree/v1.7.0)). Emulsa turns each recipe into a colour grade a computer can apply to any photo, from any camera, and adds what a camera setting can't express: split toning, per-colour shifts, faded blacks and grain.
 
@@ -14,12 +14,36 @@ Emulsa ships with 77 looks: Fuji film simulations, Kodak, Ilford and Cinestill s
 - **Saves your own versions** as custom looks, and lets you star favourites.
 - **Exports in batches** to JPEG, TIFF or PNG, at full size or resized. Your originals are never changed. EXIF data from JPEGs is kept.
 - **Saves any look as a .cube LUT** for DaVinci Resolve, Premiere, Final Cut or OBS (grain and vignette aren't part of a LUT).
+- **Look assistant.** Click the button in the corner of the photo, describe a look ("warm 70s film, faded blacks") or attach a photo whose colours you like, and it builds the look on your photo. Undo it or save it as your own.
+- **Light and dark mode**, following your system.
 
 ## Install
 
-Download `EmulsaSetup-x.y.z.exe` from the [Releases](../../releases) page and run it. Windows 10 or 11, 64-bit.
+Download the file for your computer from the [Releases](../../releases) page.
+
+| System | File | First launch |
+| --- | --- | --- |
+| Windows 10/11 (64-bit) | `EmulsaSetup-x.y.z.exe` | If Windows says it protected your PC, click **More info → Run anyway**. |
+| macOS 11+ on Apple Silicon (M1 and newer) | `Emulsa-x.y.z-macOS-arm64.dmg` | Drag Emulsa to Applications. The first time, macOS blocks it: open **System Settings → Privacy & Security** and click **Open Anyway**. |
+| Linux (x86-64) | `Emulsa-x.y.z-x86_64.AppImage` | `chmod +x Emulsa-*.AppImage` then run it. If it won't start, install `libxcb-cursor0` (Ubuntu/Debian) or `xcb-util-cursor` (Fedora/Arch). |
+
+The warnings appear because the app isn't signed with a paid developer certificate yet. Intel Macs can run Emulsa from source (below).
+
+## The look assistant
+
+The assistant runs on Claude, using **your own Anthropic API key**, so it costs you nothing beyond your own API usage, typically a few cents per message.
+
+1. Get a key from the [Claude Console](https://platform.claude.com/).
+2. Click the button in the corner of the photo and paste the key.
+3. Describe a look or attach reference photos (up to 4 per message).
+
+**Privacy:** when you press Send, a copy of your current photo (shrunk to 1024 px) and any reference photos you attached go to Anthropic to answer that message. Nothing is sent otherwise. Your key is stored in your system's keychain (Windows Credential Manager, macOS Keychain or the Linux Secret Service), never in Emulsa's settings file. If no keychain is available, the key is only kept until you close Emulsa. You can also set the `ANTHROPIC_API_KEY` environment variable instead.
+
+Emulsa treats the assistant's answers as data: every setting is checked against a fixed list and clamped to a safe range, and replies are shown as plain text.
 
 ## Keyboard
+
+On a Mac, use `Cmd` instead of `Ctrl`.
 
 | Key | Does |
 | --- | --- |
@@ -28,24 +52,30 @@ Download `EmulsaSetup-x.y.z.exe` from the [Releases](../../releases) page and ru
 | `Ctrl+O` | Open a folder |
 | `Ctrl+Shift+O` | Open individual photos |
 | `Ctrl+E` | Export |
+| `Ctrl+K` | Open the look assistant |
+| `Ctrl+Shift+E` | Save the look as a .cube |
 | Double-click a slider | Return it to the look's value |
 
 ## Run from source
 
 ```
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 python run_emulsa.py
 ```
 
-Works on Windows, macOS and Linux with Python 3.11 or newer.
+Works on Windows, macOS (Apple Silicon and Intel) and Linux with Python 3.11 or newer.
 
-## Build the installer
+## Build the apps
 
-Install [Python](https://www.python.org/downloads/) and [Inno Setup 6](https://jrsoftware.org/isinfo.php), then double-click `build.bat`. It runs the tests, builds `dist\Emulsa\Emulsa.exe` with PyInstaller and packs it into `dist\EmulsaSetup-0.1.0.exe`.
+- **Windows:** install [Python](https://www.python.org/downloads/) and [Inno Setup 6](https://jrsoftware.org/isinfo.php), then double-click `build.bat`.
+- **macOS:** `pip install -r requirements.txt pyinstaller && pyinstaller packaging/emulsa.spec && bash packaging/make_dmg.sh`
+- **Linux:** `pip install -r requirements.txt pyinstaller && pyinstaller packaging/emulsa.spec && bash packaging/make_appimage.sh`
 
-On GitHub, the workflow in `.github/workflows/build.yml` does the same on every push. Push a tag such as `v0.1.0` and it attaches the installer to a release.
+Every build can check itself with `Emulsa --self-test`.
+
+On GitHub, `.github/workflows/build.yml` runs on every push. It first runs the safety checks: the unit tests, a security scan of the code ([bandit](https://bandit.readthedocs.io/)) and a check of every dependency against known vulnerabilities ([pip-audit](https://pypi.org/project/pip-audit/)). Then it builds and self-tests the Windows, macOS and Linux apps. Push a tag such as `v0.2.0` to attach all three to a release.
 
 ## How the looks work
 

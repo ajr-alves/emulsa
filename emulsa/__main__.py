@@ -22,7 +22,9 @@ def _self_test() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         os.environ["EMULSA_HOME"] = tmp
         app = QApplication(sys.argv[:1])
+        from emulsa.ui import theme
         from emulsa.ui.main_window import MainWindow
+        theme.apply("system")
         img = np.random.default_rng(3).random((120, 160, 3)).astype(np.float32)
         for look in BUILTIN:
             out = render(img, look["params"], scale=0.5)
@@ -31,7 +33,11 @@ def _self_test() -> int:
                 return 1
         imageio.save(os.path.join(tmp, "test.jpg"), out, "JPEG", 90)
         write_cube(os.path.join(tmp, "test.cube"), BUILTIN[0]["params"], "test", size=9)
+        import anthropic  # noqa: F401  (proves the assistant's SDK is bundled)
+        from emulsa import assistant
+        assistant.KeyStore().get()
         win = MainWindow()
+        win.chat.show()
         win.set_files([os.path.join(tmp, "test.jpg")])
         app.processEvents()
         win.close()
@@ -43,9 +49,10 @@ def main():
     if "--self-test" in sys.argv:
         sys.exit(_self_test())
 
-    from PySide6.QtGui import QColor, QIcon, QPalette
+    from PySide6.QtGui import QIcon
     from PySide6.QtWidgets import QApplication
 
+    from emulsa.store import Store
     from emulsa.ui import theme
     from emulsa.ui.main_window import MainWindow
 
@@ -53,16 +60,13 @@ def main():
     app.setApplicationName("Emulsa")
     app.setOrganizationName("Emulsa")
     app.setStyle("Fusion")
-    pal = app.palette()
-    pal.setColor(QPalette.Highlight, QColor(theme.RAISED))
-    pal.setColor(QPalette.HighlightedText, QColor(theme.TEXT))
-    app.setPalette(pal)
-    app.setStyleSheet(theme.STYLESHEET)
+    store = Store()
+    theme.apply(store.get("appearance", "system"))
     here = os.path.dirname(os.path.abspath(__file__))
     icon = os.path.join(here, "assets", "emulsa.png")
     if os.path.exists(icon):
         app.setWindowIcon(QIcon(icon))
-    win = MainWindow()
+    win = MainWindow(store)
     win.show()
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     if args and os.path.exists(args[0]):

@@ -1,7 +1,9 @@
 """Batch export: apply the current look to many photos at once."""
 from __future__ import annotations
 
+import html
 import os
+import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QButtonGroup, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
@@ -14,6 +16,13 @@ SIZES = [("Original size", None), ("6000 px long edge", 6000), ("4000 px long ed
          ("2048 px long edge", 2048), ("1080 px long edge (Instagram)", 1080)]
 
 
+def safe_suffix(text: str) -> str:
+    """Keep the suffix to letters, digits, spaces, dot, dash and underscore, so it can only rename the
+    file and never point outside the chosen folder (no slashes, no '..')."""
+    cleaned = re.sub(r"[^\w .\-]", "", text, flags=re.UNICODE).strip()
+    return re.sub(r"\.{2,}", ".", cleaned)[:60]
+
+
 class ExportDialog(QDialog):
     def __init__(self, parent, store, all_files, selected_files, look, params, strength):
         super().__init__(parent)
@@ -23,7 +32,7 @@ class ExportDialog(QDialog):
         self.look, self.params, self.strength = look, params, strength
         self.thread = None
 
-        title = QLabel(f"Apply <b>{look['name']}</b> and save copies.")
+        title = QLabel(f"Apply <b>{html.escape(look['name'])}</b> and save copies.")
         title.setTextFormat(Qt.RichText)
         note = QLabel("Your original files are never changed.")
         note.setObjectName("hint")
@@ -96,7 +105,7 @@ class ExportDialog(QDialog):
         self.go_btn.setEnabled(False)
         self.progress.setRange(0, len(files)); self.progress.setValue(0); self.progress.show()
         self.thread = ExportThread(files, self.params, self.strength, out_dir, self.fmt.currentText(),
-                                   self.quality.value(), SIZES[self.size.currentIndex()][1], self.suffix.text())
+                                   self.quality.value(), SIZES[self.size.currentIndex()][1], safe_suffix(self.suffix.text()))
         self.thread.progress.connect(self._on_progress)
         self.thread.finished_all.connect(self._on_done)
         self.thread.start()
