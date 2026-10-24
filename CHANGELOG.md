@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+
+- Update notices: once a day Emulsa checks GitHub for a newer release and shows a small notice with Download and What's new. Skip a version with ×, check by hand from ••• → Check for Updates…, or turn it off.
+- The check only reads public release information; nothing is sent and nothing is downloaded without your click.
+
 ## 0.3.0
 
 - New logo: a lowercase e made of silver-halide grains, with an `emulsa` wordmark set in Bricolage Grotesque.

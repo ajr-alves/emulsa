@@ -9,14 +9,15 @@ import sys
 import numpy as np
 from PIL import Image
 from PySide6.QtCore import QByteArray, QEvent, QPoint, QSize, Qt, QThreadPool, QTimer
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QKeySequence, QPixmap
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox, QFileDialog, QHBoxLayout,
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QAction, QActionGroup, QDesktopServices, QFont, QIcon, QKeySequence, QPixmap
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox, QFileDialog, QFrame, QHBoxLayout,
                                QHeaderView, QInputDialog, QLabel, QLineEdit, QListView, QListWidget,
                                QListWidgetItem, QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea,
                                QToolButton, QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QVBoxLayout,
                                QWidget)
 
-from .. import __version__, imageio
+from .. import __version__, imageio, updates
 from ..engine import resolve, write_cube
 from ..looks import slug
 from ..store import Store
@@ -24,7 +25,7 @@ from . import icons, theme
 from .chat import ChatPanel
 from .export_dialog import ExportDialog
 from .widgets import AdjustSlider, AssistantBubble, PreviewView, Section
-from .workers import look_icons_job, preview_job, render_job, thumbnail_job, to_qimage
+from .workers import Job, look_icons_job, preview_job, render_job, thumbnail_job, to_qimage
 
 LOOK_ROLE = Qt.UserRole + 1
 PATH_ROLE = Qt.UserRole + 2
@@ -101,6 +102,8 @@ class MainWindow(QMainWindow):
         last = self.store.get("last_folder")
         if last and os.path.isdir(last):
             QTimer.singleShot(0, lambda: self.open_folder(last))
+        if updates.due(self.store):
+            QTimer.singleShot(4000, lambda: self.check_for_updates(manual=False))
 
     # ================================================================== layout
     def _build_sidebar(self) -> QWidget:
@@ -159,7 +162,32 @@ class MainWindow(QMainWindow):
 
         lay.addLayout(head); lay.addSpacing(4); lay.addWidget(self.folder_btn); lay.addWidget(self.search)
         lay.addLayout(chips); lay.addWidget(self.tree, 1)
+        lay.addWidget(self._build_update_card())
         return self.sidebar
+
+    def _build_update_card(self) -> QWidget:
+        self.update_card = QFrame(); self.update_card.setObjectName("updateCard")
+        cl = QVBoxLayout(self.update_card); cl.setContentsMargins(12, 10, 12, 10); cl.setSpacing(6)
+        self.update_title = QLabel(); self.update_title.setObjectName("updateTitle")
+        self.update_title.setTextFormat(Qt.PlainText)
+        self.update_text = QLabel(); self.update_text.setObjectName("subtle")
+        self.update_text.setTextFormat(Qt.PlainText); self.update_text.setWordWrap(True)
+        self.update_download = QPushButton("Download"); self.update_download.setObjectName("primary")
+        self.update_notes = QPushButton("What's new"); self.update_notes.setObjectName("secondary")
+        self.update_skip = QToolButton(); self.update_skip.setIcon(icons.icon("close", 14))
+        self.update_skip.setToolTip("Skip this version")
+        self.update_skip.setAccessibleName("Skip this version")
+        head = QHBoxLayout(); head.setSpacing(4)
+        head.addWidget(self.update_title, 1); head.addWidget(self.update_skip, 0, Qt.AlignTop)
+        row = QHBoxLayout(); row.setSpacing(6)
+        row.addWidget(self.update_download); row.addWidget(self.update_notes); row.addStretch(1)
+        cl.addLayout(head); cl.addWidget(self.update_text); cl.addLayout(row)
+        self.update_card.hide()
+        self.pending_release = None
+        self.update_download.clicked.connect(lambda: self._open_release(self.pending_release.download_url))
+        self.update_notes.clicked.connect(lambda: self._open_release(self.pending_release.page_url))
+        self.update_skip.clicked.connect(self._skip_release)
+        return self.update_card
 
     def _build_center(self) -> QWidget:
         center = QWidget()
@@ -288,6 +316,9 @@ class MainWindow(QMainWindow):
         self.a_about = act("About Emulsa", self._about)
         self.a_splash = act("Startup Animation", lambda on: self.store.set("startup_animation", on), None, True)
         self.a_splash.setChecked(self.store.get("startup_animation", True))
+        self.a_check = act("Check for Updates…", lambda: self.check_for_updates(manual=True))
+        self.a_auto_check = act("Check for Updates Automatically", lambda on: self.store.set("check_updates", on), None, True)
+        self.a_auto_check.setChecked(self.store.get("check_updates", True))
 
         appearance = QMenu("Appearance", self)
         group = QActionGroup(self)
@@ -301,7 +332,8 @@ class MainWindow(QMainWindow):
         for a in (self.a_open, self.a_add, None, self.a_export, self.a_cube, None, self.a_assistant,
                   self.a_sidebar, self.a_inspector):
             menu.addSeparator() if a is None else menu.addAction(a)
-        menu.addMenu(appearance); menu.addAction(self.a_splash); menu.addSeparator(); menu.addAction(self.a_about)
+        menu.addMenu(appearance); menu.addAction(self.a_splash); menu.addSeparator()
+        menu.addAction(self.a_check); menu.addAction(self.a_auto_check); menu.addAction(self.a_about)
         self.more_btn.setMenu(menu)
 
         if MAC:  # the Mac menu bar, where Mac users expect these
@@ -317,6 +349,8 @@ class MainWindow(QMainWindow):
             h = bar.addMenu("Help")
             self.a_about.setMenuRole(QAction.AboutRole)
             h.addAction(self.a_about)
+            self.a_check.setMenuRole(QAction.ApplicationSpecificRole)
+            h.addAction(self.a_check); h.addAction(self.a_auto_check)
         else:
             self.menuBar().hide()
 
@@ -327,6 +361,7 @@ class MainWindow(QMainWindow):
     # ================================================================== theme and panels
     def refresh_theme(self):
         self.more_btn.setIcon(icons.icon("more", 18))
+        self.update_skip.setIcon(icons.icon("close", 14))
         self.folder_btn.setIcon(icons.icon("folder", 16))
         self.compare_btn.setIcon(icons.icon("compare", 18))
         for sec in self.sections:
@@ -794,6 +829,40 @@ class MainWindow(QMainWindow):
         p = resolve(params)
         note = " Grain and vignette aren't part of a LUT." if p["grain"] or p["vignette"] else ""
         self.show_toast(f"Saved {os.path.basename(path)}.{note}")
+
+    # ================================================================== updates
+    def check_for_updates(self, manual: bool):
+        """Ask GitHub for the latest release in the background. Automatic checks stay silent on failure."""
+        if manual:
+            self.show_toast("Checking for updates…", 2500)
+        job = Job("update", updates.fetch_latest)
+        job.signals.done.connect(lambda _k, rel: self._update_result(rel, manual))
+        job.signals.failed.connect(lambda _k, exc: manual and self.show_toast(
+            "Couldn't reach GitHub to check for updates. Check your internet connection."))
+        self.pool.start(job, priority=-3)
+
+    def _update_result(self, release, manual):
+        import time
+        self.store.set("last_update_check", time.time())
+        if manual and release is not None and updates.is_newer(release.version) \
+                and self.store.get("skipped_version") == release.version:
+            self.store.set("skipped_version", None)   # asking by hand brings a skipped version back
+        if updates.should_announce(release, self.store):
+            self.pending_release = release
+            self.update_title.setText(f"Emulsa {release.version} is out")
+            self.update_text.setText(f"You have {__version__}. Your looks and settings are kept when you update.")
+            self.update_card.show()
+        elif manual:
+            self.show_toast(f"You're up to date. Emulsa {__version__} is the latest version.")
+
+    def _open_release(self, url):
+        if url and updates.safe_url(url):
+            QDesktopServices.openUrl(QUrl(url))
+
+    def _skip_release(self):
+        if self.pending_release:
+            self.store.set("skipped_version", self.pending_release.version)
+        self.update_card.hide()
 
     def _about(self):
         QMessageBox.about(self, "About Emulsa",

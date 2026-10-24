@@ -4,3 +4,4 @@ Pillow>=10.0
 rawpy>=0.19
 anthropic>=0.70
 keyring>=25.0
+certifi>=2024.2.2

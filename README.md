@@ -43,6 +43,12 @@ The warnings appear because the app isn't signed with a paid developer certifica
 
 ## Updating
 
+**Emulsa tells you when there's a new version.** Once a day it checks this project's Releases page, and if there's something newer, a small notice appears at the bottom of the looks list with **Download** and **What's new**. Click × to skip that version. You can also check any time from the ••• menu → **Check for Updates…**, or turn automatic checks off there.
+
+The check only reads the public release information from GitHub. Nothing about you or your photos is sent, and Emulsa never downloads or installs anything by itself.
+
+To update by hand:
+
 Your favourites, custom looks, settings and assistant key are kept when you update. They're stored in your user folder, not inside the app, so replacing the app never touches them.
 
 1. **Get the new version** from the [Releases](https://github.com/ajr-alves/emulsa/releases/latest) page. Between releases, the newest build is under [Actions](https://github.com/ajr-alves/emulsa/actions): open the latest run marked ✓ and download the file for your system under **Artifacts** (you need to be signed in to GitHub).

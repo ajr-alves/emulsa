@@ -200,4 +200,6 @@ def stylesheet() -> str:
     QLabel#bubbleError {{ color: {k['danger']}; padding: 4px 2px; }}
     QFrame#lookCard {{ background: {k['accent_soft']}; border-radius: 10px; }}
     QFrame#notice {{ background: {k['sidebar']}; border-radius: 10px; }}
+    QFrame#updateCard {{ background: {k['accent_soft']}; border-radius: 10px; }}
+    QLabel#updateTitle {{ {display} font-weight: 700; font-size: 14px; }}
     """
