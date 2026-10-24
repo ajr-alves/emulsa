@@ -4,14 +4,25 @@ from __future__ import annotations
 import copy
 import json
 import os
+import sys
 import time
 
 from .looks import BUILTIN, slug
 
 
 def data_dir() -> str:
-    base = os.environ.get("APPDATA") or os.path.join(os.path.expanduser("~"), ".config")
-    path = os.path.join(base, "Emulsa")
+    """Where settings live: %APPDATA%\\Emulsa on Windows, ~/Library/Application Support/Emulsa on macOS,
+    $XDG_CONFIG_HOME/emulsa (usually ~/.config/emulsa) on Linux. EMULSA_HOME overrides all of these."""
+    override = os.environ.get("EMULSA_HOME")
+    if override:
+        path = override
+    elif sys.platform == "win32":
+        path = os.path.join(os.environ.get("APPDATA") or os.path.expanduser("~"), "Emulsa")
+    elif sys.platform == "darwin":
+        path = os.path.join(os.path.expanduser("~"), "Library", "Application Support", "Emulsa")
+    else:
+        base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+        path = os.path.join(base, "emulsa")
     os.makedirs(path, exist_ok=True)
     return path
 

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Emulsa
+GenericName=Film looks for photos
+Comment=Apply film looks to your photos and export them
+Exec=Emulsa %F
+Icon=emulsa
+Terminal=false
+Categories=Graphics;Photography;
+MimeType=image/jpeg;image/png;image/tiff;image/x-sony-arw;image/x-canon-cr2;image/x-canon-cr3;image/x-nikon-nef;image/x-fuji-raf;image/x-adobe-dng;
+StartupWMClass=Emulsa

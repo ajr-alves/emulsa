@@ -106,7 +106,7 @@ def load_thumbnail(path: str, size: int = 160) -> Image.Image:
                    6: img.transpose(Image.ROTATE_270)}.get(flip, img)
             img.thumbnail((size, size), Image.LANCZOS)
             return img
-        except Exception:
+        except Exception:  # nosec B110 - no usable embedded preview; decode the RAW itself below
             pass
         arr = _raw_rgb(path, half=True)
         img = Image.fromarray((arr * 255 + 0.5).astype(np.uint8))
