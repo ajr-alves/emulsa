@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import os
+import re
 
 import numpy as np
 from PIL import Image, ImageOps
@@ -162,3 +163,10 @@ def save(path: str, arr: np.ndarray, fmt: str = "JPEG", quality: int = 92, exif:
     tmp = path + ".part"
     img.save(tmp, fmt, **kwargs)
     os.replace(tmp, path)
+
+
+def safe_suffix(text: str) -> str:
+    """Keep the suffix to letters, digits, spaces, dot, dash and underscore, so it can only rename the
+    file and never point outside the chosen folder (no slashes, no '..')."""
+    cleaned = re.sub(r"[^\w .\-]", "", text, flags=re.UNICODE).strip()
+    return re.sub(r"\.{2,}", ".", cleaned)[:60]

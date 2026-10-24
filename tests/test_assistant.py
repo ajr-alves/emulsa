@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
 class SafetyTests(unittest.TestCase):
     def test_export_suffix_cannot_escape_the_folder(self):
-        from emulsa.ui.export_dialog import safe_suffix
+        from emulsa.imageio import safe_suffix
         for evil in ("../../etc/passwd", "..\\..\\Windows\\x", "/abs", "C:\\x", "a/b", "_ok-name.v2"):
             out = safe_suffix(evil)
             self.assertNotIn("/", out); self.assertNotIn("\\", out); self.assertNotIn("..", out); self.assertNotIn(":", out)

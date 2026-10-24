@@ -3,24 +3,17 @@ from __future__ import annotations
 
 import html
 import os
-import re
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QButtonGroup, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
                                QLineEdit, QProgressBar, QPushButton, QRadioButton, QSpinBox, QVBoxLayout)
 
+from ..imageio import safe_suffix
 from ..looks import slug
 from .workers import ExportThread
 
 SIZES = [("Original size", None), ("6000 px long edge", 6000), ("4000 px long edge", 4000),
          ("2048 px long edge", 2048), ("1080 px long edge (Instagram)", 1080)]
-
-
-def safe_suffix(text: str) -> str:
-    """Keep the suffix to letters, digits, spaces, dot, dash and underscore, so it can only rename the
-    file and never point outside the chosen folder (no slashes, no '..')."""
-    cleaned = re.sub(r"[^\w .\-]", "", text, flags=re.UNICODE).strip()
-    return re.sub(r"\.{2,}", ".", cleaned)[:60]
 
 
 class ExportDialog(QDialog):
