@@ -1,0 +1,20 @@
+# Changelog
+
+## 0.3.0
+
+- New logo: a lowercase e made of silver-halide grains, with an `emulsa` wordmark set in Bricolage Grotesque.
+- Startup animation: the e develops grain by grain, then the wordmark appears. Click to skip; turn it off in ••• → Startup Animation.
+- New app icons for Windows, macOS and Linux, with a simplified e at small sizes so it stays sharp in the taskbar.
+- `build.bat` finds Inno Setup installed "for me only", logs to `build.log` and self-tests the app before packaging.
+- First release on the GitHub Releases page, with installers for all three systems.
+
+## 0.2.0
+
+- Look assistant: describe a look or attach reference photos, and Claude builds it on your photo (uses your own Anthropic API key).
+- Redesigned interface with light and dark mode.
+- macOS (.dmg) and Linux (AppImage) builds.
+- Safety checks on every build: unit tests, a code security scan and a dependency vulnerability audit.
+
+## 0.1.0
+
+- First version: 77 film looks, JPEG and RAW, adjustments, favourites, custom looks, batch export and .cube export.

@@ -1,4 +1,16 @@
-# Emulsa
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+    <img src="docs/logo-light.png" alt="emulsa" width="300">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/ajr-alves/emulsa/releases/latest"><b>Download</b></a> ·
+  <a href="#install">Install</a> ·
+  <a href="#updating">Updating</a> ·
+  <a href="#the-look-assistant">Look assistant</a>
+</p>
 
 Film looks for your photos. Pick a look, see it on your photo instantly, tweak it, and export one photo or a whole folder.
 
@@ -19,7 +31,7 @@ Emulsa ships with 77 looks: Fuji film simulations, Kodak, Ilford and Cinestill s
 
 ## Install
 
-Download the file for your computer from the [Releases](../../releases) page.
+Download the file for your computer from the [Releases](https://github.com/ajr-alves/emulsa/releases/latest) page.
 
 | System | File | First launch |
 | --- | --- | --- |
@@ -33,7 +45,7 @@ The warnings appear because the app isn't signed with a paid developer certifica
 
 Your favourites, custom looks, settings and assistant key are kept when you update. They're stored in your user folder, not inside the app, so replacing the app never touches them.
 
-1. **Get the new version** from the [Releases](../../releases) page. Between releases, the newest build is under [Actions](../../actions): open the latest run marked ✓ and download the file for your system under **Artifacts** (you need to be signed in to GitHub).
+1. **Get the new version** from the [Releases](https://github.com/ajr-alves/emulsa/releases/latest) page. Between releases, the newest build is under [Actions](https://github.com/ajr-alves/emulsa/actions): open the latest run marked ✓ and download the file for your system under **Artifacts** (you need to be signed in to GitHub).
 2. **Install it over the old one:**
    - **Windows:** close Emulsa and run the new `EmulsaSetup-x.y.z.exe`. It replaces the old version in place, so there's no need to uninstall first.
    - **macOS:** open the new `.dmg`, drag Emulsa to Applications and choose **Replace**.
@@ -91,7 +103,7 @@ Works on Windows, macOS (Apple Silicon and Intel) and Linux with Python 3.11 or 
 
 Every build can check itself with `Emulsa --self-test`.
 
-On GitHub, `.github/workflows/build.yml` runs on every push. It first runs the safety checks: the unit tests, a security scan of the code ([bandit](https://bandit.readthedocs.io/)) and a check of every dependency against known vulnerabilities ([pip-audit](https://pypi.org/project/pip-audit/)). Then it builds and self-tests the Windows, macOS and Linux apps. Push a tag such as `v0.2.0` to attach all three to a release.
+On GitHub, `.github/workflows/build.yml` runs on every push. It first runs the safety checks: the unit tests, a security scan of the code ([bandit](https://bandit.readthedocs.io/)) and a check of every dependency against known vulnerabilities ([pip-audit](https://pypi.org/project/pip-audit/)). Then it builds and self-tests the Windows, macOS and Linux apps. Push a tag such as `v0.3.0` to attach all three to a release.
 
 ## How the looks work
 
@@ -110,6 +122,6 @@ Emulsa wouldn't exist without **[André Domingues (voxivoid)](https://github.com
 
 ## Credits and licence
 
-MIT licence; see [LICENSE](LICENSE). The recipe values come from Recipe Lab v1.7.0 by André Domingues, released under MIT.
+MIT licence; see [LICENSE](LICENSE). The recipe values come from Recipe Lab v1.7.0 by André Domingues, released under MIT. The wordmark is set in Bricolage Grotesque (SIL Open Font License). Details in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Film and camera names describe the look each preset approximates. Emulsa isn't affiliated with or endorsed by Fujifilm, Kodak, Ilford, Cinestill, Ricoh, Leica, Hasselblad, Canon, Nikon, Panasonic, Olympus, Agfa, Polaroid or Sony.

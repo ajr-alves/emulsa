@@ -36,6 +36,12 @@ def _self_test() -> int:
         import anthropic  # noqa: F401  (proves the assistant's SDK is bundled)
         from emulsa import assistant
         assistant.KeyStore().get()
+        from emulsa.ui.splash import Splash
+        sp = Splash()
+        sp.start()
+        sp.t = 1.0
+        sp.grab()             # draws a mid-animation frame
+        sp.skip()
         win = MainWindow()
         win.chat.show()
         win.set_files([os.path.join(tmp, "test.jpg")])
@@ -66,8 +72,27 @@ def main():
     icon = os.path.join(here, "assets", "emulsa.png")
     if os.path.exists(icon):
         app.setWindowIcon(QIcon(icon))
+    from emulsa.ui.splash import Splash
+    animate = store.get("startup_animation", True) and "--no-splash" not in sys.argv
+    splash = None
+    if animate:
+        splash = Splash()
+        splash.show()
+        app.processEvents()   # paint the empty card right away, so the launch feels instant
     win = MainWindow(store)
-    win.show()
+
+    def show_main():
+        win.show()
+        win.raise_()
+        win.activateWindow()
+        if splash is not None:
+            splash.raise_()   # keep fading out on top
+
+    if splash is not None:
+        splash.handover.connect(show_main)
+        splash.start()        # starts only now that the window is built, so it never stutters
+    else:
+        win.show()
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     if args and os.path.exists(args[0]):
         target = args[0]

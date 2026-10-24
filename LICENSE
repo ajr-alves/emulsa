@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
--------------------------------------------------------------------------------
-Third-party notice
-
-The in-camera recipe values in emulsa/looks.py come from Recipe Lab v1.7.0
-(https://github.com/voxivoid/recipe-lab-sony-pmca/tree/v1.7.0), released under
-the MIT License, Copyright (c) André Domingues (voxivoid). Later Recipe Lab
-releases are GPL-3.0; no code or data from those releases is used here.

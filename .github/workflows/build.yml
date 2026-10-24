@@ -114,3 +114,16 @@ jobs:
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: artifacts/*
+          generate_release_notes: true
+          body: |
+            ## Download
+
+            | System | File |
+            | --- | --- |
+            | Windows 10/11 (64-bit) | `EmulsaSetup-*.exe` |
+            | macOS 11+ on Apple Silicon | `Emulsa-*-macOS-arm64.dmg` |
+            | Linux (x86-64) | `Emulsa-*-x86_64.AppImage` |
+
+            The apps aren't code-signed yet, so Windows and macOS warn on first launch. See [Install](https://github.com/ajr-alves/emulsa#install) for the one-click way past it, and [Updating](https://github.com/ajr-alves/emulsa#updating) if you already have Emulsa. Your looks and settings are kept.
+
+            What's new is in [CHANGELOG.md](https://github.com/ajr-alves/emulsa/blob/main/CHANGELOG.md).

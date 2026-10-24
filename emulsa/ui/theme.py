@@ -47,6 +47,18 @@ DARK = {
 
 _mode = "system"     # "system", "light" or "dark"
 _colors = LIGHT
+DISPLAY_FONT = "Bricolage Grotesque 96pt"   # Emulsa's wordmark face (SIL Open Font License, bundled)
+
+
+def load_fonts() -> None:
+    """Register the bundled display font. Falls back to the system font if it can't load."""
+    global DISPLAY_FONT
+    import os
+    from PySide6.QtGui import QFontDatabase
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "fonts", "BricolageGrotesque-Bold.ttf")
+    fid = QFontDatabase.addApplicationFont(path) if os.path.exists(path) else -1
+    families = QFontDatabase.applicationFontFamilies(fid) if fid >= 0 else []
+    DISPLAY_FONT = families[0] if families else ""
 
 
 def is_dark() -> bool:
@@ -77,6 +89,9 @@ def apply(mode: str | None = None) -> None:
     dark = system_is_dark() if _mode == "system" else _mode == "dark"
     _colors = DARK if dark else LIGHT
     app = QApplication.instance()
+    if DISPLAY_FONT == "Bricolage Grotesque 96pt" and not getattr(apply, "_fonts_loaded", False):
+        load_fonts()
+        apply._fonts_loaded = True
     pal = QPalette()
     for role, key in ((QPalette.Window, "bg"), (QPalette.Base, "field"), (QPalette.AlternateBase, "sidebar"),
                       (QPalette.Text, "text"), (QPalette.WindowText, "text"), (QPalette.ButtonText, "text"),
@@ -98,15 +113,17 @@ def mode() -> str:
 
 def stylesheet() -> str:
     k = _colors
+    display = f"font-family: '{DISPLAY_FONT}';" if DISPLAY_FONT else ""
     return f"""
     QWidget {{ color: {k['text']}; }}
+    QLabel#wordmark {{ {display} font-weight: 700; font-size: 19px; letter-spacing: -0.4px; }}
     QMainWindow, QWidget#root {{ background: {k['bg']}; }}
     QWidget#sidebar, QWidget#inspector {{ background: {k['sidebar']}; }}
     QWidget#sidebar {{ border-right: 1px solid {k['line']}; }}
     QWidget#inspector {{ border-left: 1px solid {k['line']}; }}
     QWidget#topbar {{ background: {k['bg']}; border-bottom: 1px solid {k['line']}; }}
     QLabel#appName {{ font-weight: 600; font-size: 14px; }}
-    QLabel#title {{ font-size: 20px; font-weight: 600; }}
+    QLabel#title {{ {display} font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }}
     QLabel#subtle, QLabel#hint {{ color: {k['muted']}; }}
     QLabel#caption {{ color: {k['muted']}; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; }}
     QLabel#photoName {{ color: {k['muted']}; }}

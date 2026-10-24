@@ -3,7 +3,7 @@
 
 #define AppName "Emulsa"
 #ifndef AppVersion
-  #define AppVersion "0.2.0"
+  #define AppVersion "0.3.0"
 #endif
 
 [Setup]
@@ -32,6 +32,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\dist\Emulsa\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
+Source: "..\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\Emulsa.exe"

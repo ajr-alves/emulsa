@@ -108,10 +108,14 @@ class MainWindow(QMainWindow):
         lay = QVBoxLayout(self.sidebar); lay.setContentsMargins(12, 12, 8, 8); lay.setSpacing(8)
 
         logo = QLabel()
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "emulsa.png")
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "emulsa-small.png")
         if os.path.exists(logo_path):
-            logo.setPixmap(QPixmap(logo_path).scaled(22, 22, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        name = QLabel("Emulsa"); name.setObjectName("appName")
+            dpr = self.devicePixelRatioF() or 1.0
+            pm = QPixmap(logo_path).scaled(round(24 * dpr), round(24 * dpr), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pm.setDevicePixelRatio(dpr)
+            logo.setPixmap(pm)
+        logo.setAccessibleName("Emulsa")
+        name = QLabel("emulsa"); name.setObjectName("wordmark")
         self.more_btn = QToolButton(); self.more_btn.setToolTip("Menu"); self.more_btn.setAccessibleName("Menu")
         self.more_btn.setPopupMode(QToolButton.InstantPopup)
         head = QHBoxLayout(); head.setSpacing(8); head.setContentsMargins(4, 0, 0, 0)
@@ -282,6 +286,8 @@ class MainWindow(QMainWindow):
         self.a_sidebar.setChecked(self.store.get("show_sidebar", True))
         self.a_inspector.setChecked(self.store.get("show_inspector", True))
         self.a_about = act("About Emulsa", self._about)
+        self.a_splash = act("Startup Animation", lambda on: self.store.set("startup_animation", on), None, True)
+        self.a_splash.setChecked(self.store.get("startup_animation", True))
 
         appearance = QMenu("Appearance", self)
         group = QActionGroup(self)
@@ -295,7 +301,7 @@ class MainWindow(QMainWindow):
         for a in (self.a_open, self.a_add, None, self.a_export, self.a_cube, None, self.a_assistant,
                   self.a_sidebar, self.a_inspector):
             menu.addSeparator() if a is None else menu.addAction(a)
-        menu.addMenu(appearance); menu.addSeparator(); menu.addAction(self.a_about)
+        menu.addMenu(appearance); menu.addAction(self.a_splash); menu.addSeparator(); menu.addAction(self.a_about)
         self.more_btn.setMenu(menu)
 
         if MAC:  # the Mac menu bar, where Mac users expect these
@@ -307,6 +313,7 @@ class MainWindow(QMainWindow):
             for a in (self.a_assistant, self.a_sidebar, self.a_inspector):
                 v.addAction(a)
             v.addMenu(appearance)
+            v.addAction(self.a_splash)
             h = bar.addMenu("Help")
             self.a_about.setMenuRole(QAction.AboutRole)
             h.addAction(self.a_about)
