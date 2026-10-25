@@ -17,7 +17,9 @@ Film looks for your photos. Pick a look, see it on your photo instantly, tweak i
 
 ![Emulsa with the look assistant open](docs/screenshot.png)
 
-Emulsa ships with 77 looks: Fuji film simulations, Kodak, Ilford and Cinestill stocks, Ricoh GR, Leica, Canon, Nikon and more. They started life as in-camera recipes for Sony cameras (from [Recipe Lab](https://github.com/voxivoid/recipe-lab-sony-pmca/tree/v1.7.0)). Emulsa turns each recipe into a colour grade a computer can apply to any photo, from any camera, and adds what a camera setting can't express: split toning, per-colour shifts, faded blacks and grain.
+Emulsa ships with 100 looks. 77 of them are film stocks and camera styles: Fuji film simulations, Kodak, Ilford and Cinestill stocks, Ricoh GR, Leica, Canon, Nikon and more. They started life as in-camera recipes for Sony cameras (from [Recipe Lab](https://github.com/voxivoid/recipe-lab-sony-pmca/tree/v1.7.0)). Emulsa turns each recipe into a colour grade a computer can apply to any photo, from any camera, and adds what a camera setting can't express: split toning, per-colour shifts, faded blacks and grain.
+
+The other 23 are Emulsa's own. **Movies** are grades inspired by films, from Dune and Blade Runner 2049 to The Shining, The Lighthouse and The Batman. **Moods** aren't tied to any film: Teal & Orange, Golden Hour, Matte Moody, Neon Night and more.
 
 ## What it does
 
@@ -126,6 +128,7 @@ To add or tune a look, edit `emulsa/looks.py`:
 
 - `RECIPES` holds the in-camera settings: Creative Style, saturation, contrast, white balance, DRO, exposure and Picture Effect.
 - `CHARACTER` holds the film character layered on top: split toning, per-colour hue and saturation, faded blacks, grain.
+- `EXTRA` holds Emulsa's own looks (Movies and Moods), written directly as engine parameters.
 
 Run the tests with `python -m unittest discover -s tests`.
 
@@ -137,4 +140,4 @@ Emulsa wouldn't exist without **[André Domingues (voxivoid)](https://github.com
 
 MIT licence; see [LICENSE](LICENSE). The recipe values come from Recipe Lab v1.7.0 by André Domingues, released under MIT. The wordmark is set in Bricolage Grotesque (SIL Open Font License). Details in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Film and camera names describe the look each preset approximates. Emulsa isn't affiliated with or endorsed by Fujifilm, Kodak, Ilford, Cinestill, Ricoh, Leica, Hasselblad, Canon, Nikon, Panasonic, Olympus, Agfa, Polaroid or Sony.
+Film and camera names describe the look each preset approximates, and film titles name the movie whose colour a look is inspired by. Emulsa isn't affiliated with or endorsed by Fujifilm, Kodak, Ilford, Cinestill, Ricoh, Leica, Hasselblad, Canon, Nikon, Panasonic, Olympus, Agfa, Polaroid or Sony, or by the makers of any film named here.

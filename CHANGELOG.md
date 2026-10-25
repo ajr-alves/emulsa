@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
 
 - 23 new looks, for 100 in all. **Movies**: grades inspired by Dune, Blade Runner 2049, The Dark Knight, Oppenheimer, The Brutalist, The Shining, There Will Be Blood, The Lighthouse, Se7en, The Grand Budapest Hotel, All Quiet on the Western Front, The Wind Rises, Pulp Fiction, Nosferatu and The Batman. **Moods**: Teal & Orange, Golden Hour, Matte Moody, Neon Night, Airy Bright, Nordic Cold, Sun-Bleached and Film Noir.
 
