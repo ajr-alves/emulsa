@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="https://ajr-alves.github.io/"><b>Website</b></a> ·
   <a href="https://github.com/ajr-alves/emulsa/releases/latest"><b>Download</b></a> ·
   <a href="#install">Install</a> ·
   <a href="#updating">Updating</a> ·
