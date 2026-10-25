@@ -6,7 +6,7 @@ import numpy as np
 
 from emulsa import imageio
 from emulsa.engine import apply_lut, bake_lut, grade, render, resolve, write_cube
-from emulsa.looks import BUILTIN, RECIPES
+from emulsa.looks import BUILTIN, EXTRA, RECIPES
 from emulsa.store import Store
 
 
@@ -56,7 +56,7 @@ class EngineTests(unittest.TestCase):
         self.assertLess(float(np.abs(apply_lut(img, lut, strength=0.0) - img).max()), 1e-6)
 
     def test_all_recipes_become_looks_with_unique_ids(self):
-        self.assertEqual(len(BUILTIN), len(RECIPES))
+        self.assertEqual(len(BUILTIN), len(RECIPES) + len(EXTRA))
         self.assertEqual(len({l["id"] for l in BUILTIN}), len(BUILTIN))
 
     def test_cube_file(self):

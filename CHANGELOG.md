@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- 23 new looks, for 100 in all. **Movies**: grades inspired by Dune, Blade Runner 2049, The Dark Knight, Oppenheimer, The Brutalist, The Shining, There Will Be Blood, The Lighthouse, Se7en, The Grand Budapest Hotel, All Quiet on the Western Front, The Wind Rises, Pulp Fiction, Nosferatu and The Batman. **Moods**: Teal & Orange, Golden Hour, Matte Moody, Neon Night, Airy Bright, Nordic Cold, Sun-Bleached and Film Noir.
+
 ## 0.5.0
 
 - Zoom: scroll or pinch to zoom at the cursor, drag to move around, double-click to switch between Fit and 100%. The zoom button in the top bar has Fit, 50%, 100%, 200% and 400%. Zoomed-in views are rendered from the full-resolution photo, RAW included, so you see real detail with the look applied.

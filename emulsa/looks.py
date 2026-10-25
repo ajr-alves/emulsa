@@ -6,6 +6,8 @@ that MIT release is used; later Recipe Lab releases are GPL-3.0. The recipe sets
 saturation, contrast, white balance, DRO, exposure and Picture Effect. ``recipe_params`` turns those
 camera settings into engine parameters, and ``CHARACTER`` adds what a camera setting cannot express
 (split toning, per-hue shifts, faded blacks, grain), which is where most of a film stock's feel lives.
+
+``EXTRA`` adds Emulsa's own looks on top: grades inspired by films and general moods.
 """
 from __future__ import annotations
 
@@ -208,6 +210,80 @@ CHARACTER = {
 }
 
 
+# Looks made for Emulsa rather than taken from a camera recipe: grades inspired by films, and general
+# moods that aren't tied to any film stock. Each is plain engine parameters (see engine.DEFAULTS).
+EXTRA = [
+    # Sun-baked sand: everything pulled toward ochre, blues and greens drained, soft highlights.
+    ('Movies', 'Dune (Arrakis)',
+     {"temperature": 28, "tint": 3, "contrast": 0.05, "highlights": -0.3, "fade": 0.05, "saturation": 0.68, "hsl": {"blue": {"sat": 0.3, "hue": -15}, "aqua": {"sat": 0.35}, "green": {"sat": 0.4, "hue": -30}, "orange": {"sat": 1.05}}, "split_shadows": [30, 0.4], "split_highlights": [40, 0.45], "grain": 0.12}),
+    # Dusty orange haze: nearly one colour, low contrast, lifted blacks.
+    ('Movies', 'Blade Runner 2049 (Las Vegas)',
+     {"temperature": 45, "contrast": -0.1, "highlights": -0.35, "fade": 0.07, "saturation": 0.8, "hsl": {"blue": {"sat": 0.2}, "aqua": {"sat": 0.2}, "green": {"hue": -35, "sat": 0.4}, "yellow": {"hue": -15}}, "split_shadows": [22, 0.85], "split_highlights": [32, 0.85], "grain": 0.05}),
+    # Steel-blue shadows, warm skin, firm contrast. Gotham at dusk.
+    ('Movies', 'The Dark Knight',
+     {"temperature": -6, "contrast": 0.25, "fade": -0.02, "saturation": 0.85, "hsl": {"blue": {"hue": -8}, "aqua": {"sat": 0.9}, "orange": {"sat": 0.95}}, "split_shadows": [205, 0.4], "split_highlights": [38, 0.15], "grain": 0.1, "vignette": 0.1}),
+    # Hard, glossy black and white with deep blacks, like Kodak Double-X.
+    ('Movies', 'Oppenheimer (black & white)',
+     {"mono": True, "mono_mix": [0.45, 0.45, 0.1], "contrast": 0.45, "fade": -0.03, "highlights": 0.1, "grain": 0.35, "vignette": 0.15}),
+    # Muted VistaVision warmth, olive greens, cyan in the shadows, visible grain.
+    ('Movies', 'The Brutalist',
+     {"temperature": 12, "tint": 1, "contrast": 0.18, "highlights": -0.25, "fade": 0.04, "saturation": 0.72, "hsl": {"green": {"hue": -15, "sat": 0.65}, "blue": {"sat": 0.6, "hue": 8}, "red": {"sat": 0.9}, "orange": {"sat": 0.9}}, "split_shadows": [165, 0.32], "split_highlights": [45, 0.32], "grain": 0.35, "vignette": 0.18}),
+    # Clean, warm and rich, with reds that jump. The hotel's carpets and corridors.
+    ('Movies', 'The Shining (Overlook)',
+     {"temperature": 14, "contrast": 0.15, "highlights": 0.1, "saturation": 1.0, "hsl": {"red": {"sat": 1.35, "hue": -3}, "orange": {"sat": 1.0}, "yellow": {"sat": 0.95, "hue": -6}, "green": {"sat": 0.8}, "blue": {"sat": 0.8}}, "split_shadows": [20, 0.12], "grain": 0.06}),
+    # Oil and dust: desaturated earth tones, crushed blacks, heavy vignette.
+    ('Movies', 'There Will Be Blood',
+     {"temperature": 16, "tint": 1, "contrast": 0.3, "highlights": -0.15, "fade": -0.04, "saturation": 0.62, "hsl": {"blue": {"sat": 0.5}, "green": {"sat": 0.5, "hue": -15}, "orange": {"sat": 0.9}}, "split_shadows": [30, 0.3], "split_highlights": [45, 0.3], "grain": 0.3, "vignette": 0.25}),
+    # Old orthochromatic film: reds go dark, skies go white, thick grain.
+    ('Movies', 'The Lighthouse (orthochromatic)',
+     {"mono": True, "mono_mix": [0.05, 0.45, 0.5], "contrast": 0.5, "fade": -0.04, "highlights": 0.1, "grain": 0.55, "vignette": 0.45}),
+    # Fincher's sickly city: green-yellow cast, drained colour, crushed shadows.
+    ('Movies', 'Se7en',
+     {"temperature": 4, "tint": 6, "contrast": 0.35, "shadows": -0.1, "fade": -0.05, "saturation": 0.55, "hsl": {"yellow": {"hue": -6, "sat": 0.9}}, "split_shadows": [150, 0.3], "split_highlights": [55, 0.3], "grain": 0.3, "vignette": 0.2}),
+    # Pastel confection: soft contrast, pink highlights, lifted blacks.
+    ('Movies', 'The Grand Budapest Hotel',
+     {"temperature": 2, "tint": -3, "exposure": 0.15, "contrast": -0.08, "highlights": -0.1, "fade": 0.05, "saturation": 1.05, "hsl": {"red": {"lum": 0.4, "sat": 0.85}, "magenta": {"sat": 1.2, "lum": 0.3}, "blue": {"hue": 15, "sat": 0.9}}, "split_shadows": [280, 0.15], "split_highlights": [330, 0.2]}),
+    # Cold mud and smoke: grey-blue, olive greens, almost no colour.
+    ('Movies', 'All Quiet on the Western Front',
+     {"temperature": -14, "tint": 2, "contrast": 0.2, "fade": 0.02, "saturation": 0.45, "hsl": {"green": {"sat": 0.6, "hue": -10}, "orange": {"sat": 0.8}}, "split_shadows": [200, 0.3], "split_highlights": [190, 0.1], "grain": 0.25, "vignette": 0.2}),
+    # Ghibli brightness: airy, open shadows, clear skies and fresh greens.
+    ('Movies', 'The Wind Rises (summer sky)',
+     {"exposure": 0.25, "temperature": 5, "contrast": -0.15, "highlights": -0.15, "shadows": 0.3, "fade": 0.05, "saturation": 1.2, "hsl": {"blue": {"sat": 1.25, "hue": 8, "lum": 0.5}, "aqua": {"sat": 1.2, "lum": 0.3}, "green": {"sat": 1.25, "hue": 10, "lum": 0.3}, "orange": {"lum": 0.15}}, "split_shadows": [200, 0.12], "split_highlights": [50, 0.15]}),
+    # Warm, saturated 90s print: punchy reds and yellows, golden highlights.
+    ('Movies', 'Pulp Fiction',
+     {"temperature": 7, "tint": 1.5, "contrast": 0.25, "fade": -0.02, "saturation": 1.08, "hsl": {"red": {"sat": 1.1}, "yellow": {"sat": 1.35, "hue": -3}, "orange": {"sat": 1.0, "hue": 4}, "blue": {"sat": 0.95}}, "split_shadows": [190, 0.15], "split_highlights": [55, 0.4], "grain": 0.22}),
+    # Nearly black and white, washed in cold blue moonlight.
+    ('Movies', 'Nosferatu (moonlight)',
+     {"temperature": -25, "contrast": 0.3, "highlights": -0.1, "fade": -0.03, "saturation": 0.18, "split_shadows": [215, 0.45], "split_highlights": [205, 0.25], "grain": 0.3, "vignette": 0.35}),
+    # Sodium-vapour night: dark, red-orange, crushed blacks, blues and greens killed.
+    ('Movies', 'The Batman',
+     {"temperature": 26, "tint": -1, "exposure": -0.45, "contrast": 0.45, "fade": -0.07, "saturation": 0.8, "hsl": {"red": {"sat": 1.3, "hue": -4}, "orange": {"sat": 1.0}, "blue": {"sat": 0.3}, "green": {"sat": 0.3}, "aqua": {"sat": 0.3}}, "split_shadows": [10, 0.55], "split_highlights": [28, 0.3], "grain": 0.28, "vignette": 0.4}),
+    # The blockbuster grade: teal shadows and backgrounds, warm skin.
+    ('Moods', 'Teal & Orange',
+     {"contrast": 0.22, "saturation": 1.08, "hsl": {"blue": {"hue": -15, "sat": 1.15}, "aqua": {"sat": 1.15}, "green": {"hue": 45, "sat": 0.65}, "orange": {"sat": 1.12, "lum": 0.12}, "yellow": {"hue": -14}}, "split_shadows": [188, 0.65], "split_highlights": [30, 0.35]}),
+    # Low warm sun: glowing highlights, soft shadows, rich skin.
+    ('Moods', 'Golden Hour',
+     {"temperature": 22, "tint": -1, "exposure": 0.05, "highlights": -0.2, "shadows": 0.1, "saturation": 1.1, "hsl": {"orange": {"sat": 1.1, "lum": 0.15}, "yellow": {"hue": -6}, "blue": {"sat": 0.85}}, "split_shadows": [20, 0.1], "split_highlights": [40, 0.35]}),
+    # Faded blacks, quiet colour and cool shadows. The Instagram-era mood.
+    ('Moods', 'Matte Moody',
+     {"temperature": -4, "contrast": -0.15, "fade": 0.1, "saturation": 0.75, "hsl": {"green": {"sat": 0.7}, "blue": {"sat": 0.8}}, "split_shadows": [205, 0.25], "split_highlights": [40, 0.08], "grain": 0.1}),
+    # City at night: purple shadows, magenta and cyan lights, deep contrast.
+    ('Moods', 'Neon Night',
+     {"temperature": -10, "tint": -4, "contrast": 0.3, "fade": -0.04, "saturation": 1.2, "hsl": {"magenta": {"sat": 1.3}, "purple": {"sat": 1.3}, "blue": {"sat": 1.2, "hue": 10}, "aqua": {"sat": 1.2}, "orange": {"sat": 0.9}}, "split_shadows": [250, 0.45], "split_highlights": [320, 0.2], "vignette": 0.2}),
+    # Light and clean: bright, open shadows, gentle colour. Weddings and interiors.
+    ('Moods', 'Airy Bright',
+     {"exposure": 0.45, "temperature": 3, "contrast": -0.25, "highlights": -0.3, "shadows": 0.3, "fade": 0.05, "saturation": 0.82, "hsl": {"orange": {"lum": 0.25, "sat": 0.9}, "green": {"sat": 0.75}}, "split_highlights": [40, 0.08]}),
+    # Overcast north: cool, pale and quiet, with muted greens.
+    ('Moods', 'Nordic Cold',
+     {"temperature": -18, "contrast": 0.05, "highlights": -0.15, "fade": 0.04, "saturation": 0.6, "hsl": {"blue": {"sat": 0.8, "hue": 5}, "green": {"sat": 0.5, "hue": 15}, "orange": {"sat": 0.75}}, "split_shadows": [210, 0.2], "split_highlights": [200, 0.1]}),
+    # A summer print left in the sun: washed out, warm, cyan-leaning blues.
+    ('Moods', 'Sun-Bleached',
+     {"exposure": 0.3, "temperature": 14, "contrast": -0.2, "highlights": -0.35, "fade": 0.12, "saturation": 0.65, "hsl": {"blue": {"sat": 0.65, "hue": -14}, "green": {"hue": -12, "sat": 0.6}, "red": {"sat": 0.75}}, "split_shadows": [190, 0.25], "split_highlights": [50, 0.45], "grain": 0.1}),
+    # Hard black and white: inky shadows, bright highlights, heavy vignette.
+    ('Moods', 'Film Noir',
+     {"mono": True, "mono_mix": [0.3, 0.6, 0.1], "contrast": 0.7, "shadows": -0.15, "highlights": 0.2, "fade": -0.08, "grain": 0.3, "vignette": 0.5}),
+]
+
 def merge(base: dict, extra: dict) -> dict:
     """Layer ``extra`` on top of ``base`` (see ADDITIVE for how keys combine)."""
     out = copy.deepcopy(base)
@@ -259,6 +335,9 @@ def _build() -> list[dict]:
             params.pop("hsl", None)
         looks.append({"id": slug(name), "name": RENAME.get(name, name), "brand": brand,
                       "params": params, "builtin": True})
+    for brand, name, params in EXTRA:
+        looks.append({"id": slug(name), "name": name, "brand": brand,
+                      "params": copy.deepcopy(params), "builtin": True})
     return looks
 
 
