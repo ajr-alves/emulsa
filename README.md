@@ -24,11 +24,12 @@ The other 23 are Emulsa's own. **Movies** are grades inspired by films, from Dun
 ## What it does
 
 - **Opens one photo, a few, or a whole folder**: drop them in or pick them. Works with JPEG, PNG, TIFF and RAW files (Sony .ARW, Canon .CR2/.CR3, Nikon .NEF, Fuji .RAF, .DNG and others).
+- **Shows only RAW files or only JPEGs** when you shoot RAW+JPEG, with a switch above the photos, so each shot doesn't appear twice.
 - **Zooms in to full resolution.** Scroll or pinch to zoom, drag to move around, double-click for 100%. The look is applied at full detail, RAW included.
 - **Shows every look on your own photo** in the looks list, so you can see the result before you click.
 - **Adjusts any look** with exposure, contrast, highlights, shadows, faded blacks, temperature, tint, saturation, grain, vignette and black & white. Hold the `\` key to compare with the original.
 - **Saves your own versions** as custom looks, and lets you star favourites.
-- **Exports in batches** to JPEG, TIFF or PNG, at full size or resized. Your originals are never changed. EXIF data from JPEGs is kept.
+- **Exports in the background** to JPEG, TIFF or PNG, at full size or resized, so you can keep working. Queue up as many exports as you like, for example the same photos in two looks; they run one after another, and the Exports button in the top bar shows their progress. Your originals are never changed. EXIF data from JPEGs is kept.
 - **Saves any look as a .cube LUT** for DaVinci Resolve, Premiere, Final Cut or OBS (grain and vignette aren't part of a LUT).
 - **Look assistant.** Click the button in the corner of the photo, describe a look ("warm 70s film, faded blacks") or attach a photo whose colours you like, and it builds the look on your photo. Undo it or save it as your own.
 - **Light and dark mode**, following your system.

@@ -1,4 +1,4 @@
-"""Batch export: apply the current look to many photos at once."""
+"""Export settings: which photos, where and how to save them. The export itself runs in the queue."""
 from __future__ import annotations
 
 import html
@@ -6,32 +6,33 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QButtonGroup, QComboBox, QDialog, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-                               QLineEdit, QProgressBar, QPushButton, QRadioButton, QSpinBox, QVBoxLayout)
+                               QLineEdit, QPushButton, QRadioButton, QSpinBox, QVBoxLayout)
 
+from ..exporter import ExportSpec
 from ..imageio import safe_suffix
 from ..looks import slug
-from .workers import ExportThread
 
 SIZES = [("Original size", None), ("6000 px long edge", 6000), ("4000 px long edge", 4000),
          ("2048 px long edge", 2048), ("1080 px long edge (Instagram)", 1080)]
 
 
 class ExportDialog(QDialog):
-    def __init__(self, parent, store, all_files, selected_files, look, params, strength):
+    def __init__(self, parent, store, all_files, selected_files, look, params, strength,
+                 all_label="All photos in the folder"):
         super().__init__(parent)
         self.setWindowTitle("Export photos")
         self.setMinimumWidth(480)
         self.store, self.all_files, self.selected_files = store, all_files, selected_files
         self.look, self.params, self.strength = look, params, strength
-        self.thread = None
+        self.spec: ExportSpec | None = None   # set when the person clicks Export
 
         title = QLabel(f"Apply <b>{html.escape(look['name'])}</b> and save copies.")
         title.setTextFormat(Qt.RichText)
-        note = QLabel("Your original files are never changed.")
-        note.setObjectName("hint")
+        note = QLabel("Your original files are never changed. Exports run in the background, so you can keep working.")
+        note.setObjectName("hint"); note.setWordWrap(True)
 
         self.sel_radio = QRadioButton(f"Selected photos ({len(selected_files)})")
-        self.all_radio = QRadioButton(f"All photos in the folder ({len(all_files)})")
+        self.all_radio = QRadioButton(f"{all_label} ({len(all_files)})")
         group = QButtonGroup(self)
         group.addButton(self.sel_radio); group.addButton(self.all_radio)
         (self.sel_radio if selected_files else self.all_radio).setChecked(True)
@@ -63,15 +64,15 @@ class ExportDialog(QDialog):
         form.addRow("Format", self.fmt); form.addRow("JPEG quality", self.quality)
         form.addRow("Size", self.size); form.addRow("Add to file name", self.suffix)
 
-        self.progress = QProgressBar(); self.progress.hide()
-        self.status = QLabel(""); self.status.setObjectName("hint")
-        self.cancel_btn = QPushButton("Cancel"); self.cancel_btn.clicked.connect(self._cancel)
-        self.go_btn = QPushButton("Export"); self.go_btn.setObjectName("primary"); self.go_btn.clicked.connect(self._start)
+        self.status = QLabel(""); self.status.setObjectName("hint"); self.status.setWordWrap(True)
+        self.cancel_btn = QPushButton("Cancel"); self.cancel_btn.clicked.connect(self.reject)
+        self.go_btn = QPushButton("Export"); self.go_btn.setObjectName("primary"); self.go_btn.setDefault(True)
+        self.go_btn.clicked.connect(self._start)
         buttons = QHBoxLayout(); buttons.addWidget(self.status, 1); buttons.addWidget(self.cancel_btn); buttons.addWidget(self.go_btn)
 
         lay = QVBoxLayout(self)
         lay.setSpacing(10)
-        lay.addWidget(title); lay.addWidget(note); lay.addLayout(form); lay.addWidget(self.progress); lay.addLayout(buttons)
+        lay.addWidget(title); lay.addWidget(note); lay.addLayout(form); lay.addLayout(buttons)
 
     def _browse(self):
         d = QFileDialog.getExistingDirectory(self, "Save exports to", self.dir_edit.text())
@@ -95,36 +96,8 @@ class ExportDialog(QDialog):
         for k, v in (("export_dir", out_dir), ("export_format", self.fmt.currentText()),
                      ("export_quality", self.quality.value()), ("export_size", self.size.currentIndex())):
             self.store.set(k, v)
-        self.go_btn.setEnabled(False)
-        self.progress.setRange(0, len(files)); self.progress.setValue(0); self.progress.show()
-        self.thread = ExportThread(files, self.params, self.strength, out_dir, self.fmt.currentText(),
-                                   self.quality.value(), SIZES[self.size.currentIndex()][1], safe_suffix(self.suffix.text()))
-        self.thread.progress.connect(self._on_progress)
-        self.thread.finished_all.connect(self._on_done)
-        self.thread.start()
-
-    def _on_progress(self, done, total, name):
-        self.progress.setValue(done)
-        self.status.setText(f"Exporting {name}  ({done + 1} of {total})" if name else "Finishing…")
-
-    def _on_done(self, count, errors):
-        self.thread = None
-        self.cancel_btn.setText("Close")
-        self.go_btn.setEnabled(True)
-        msg = f"Exported {count} photo{'s' if count != 1 else ''} to {self.dir_edit.text()}."
-        if errors:
-            msg += f" {len(errors)} failed: " + "; ".join(f"{n} ({e})" for n, e in errors[:3])
-        self.status.setText(msg)
-        self.status.setWordWrap(True)
-
-    def _cancel(self):
-        if self.thread is not None:
-            self.thread.cancel()
-            self.thread.wait(30000)
-        self.reject()
-
-    def closeEvent(self, e):
-        if self.thread is not None:
-            self.thread.cancel()
-            self.thread.wait(30000)
-        super().closeEvent(e)
+        self.spec = ExportSpec(look_name=self.look["name"], files=list(files), params=self.params,
+                               strength=self.strength, out_dir=out_dir, fmt=self.fmt.currentText(),
+                               quality=self.quality.value(), long_edge=SIZES[self.size.currentIndex()][1],
+                               suffix=safe_suffix(self.suffix.text()))
+        self.accept()

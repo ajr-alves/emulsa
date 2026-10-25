@@ -11,7 +11,7 @@ from PIL import Image
 from PySide6.QtCore import QByteArray, QEvent, QPoint, QSize, Qt, QThreadPool, QTimer
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QAction, QActionGroup, QDesktopServices, QFont, QIcon, QKeySequence, QPixmap
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox, QFileDialog, QFrame, QHBoxLayout,
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox, QDialog, QFileDialog, QFrame, QHBoxLayout,
                                QHeaderView, QInputDialog, QLabel, QLineEdit, QListView, QListWidget,
                                QListWidgetItem, QMainWindow, QMenu, QMessageBox, QPushButton, QScrollArea,
                                QToolButton, QTreeWidget, QTreeWidgetItem, QTreeWidgetItemIterator, QVBoxLayout,
@@ -24,6 +24,7 @@ from ..store import Store
 from . import icons, theme
 from .chat import ChatPanel
 from .export_dialog import ExportDialog
+from .export_queue import ExportQueue, QueueButton, plural
 from .widgets import AdjustSlider, AssistantBubble, PreviewView, Section
 from .workers import Job, detail_job, look_icons_job, preview_job, render_job, thumbnail_job, to_qimage
 
@@ -58,7 +59,10 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(960, 600)
         self.store = store or Store()
         self.pool = QThreadPool.globalInstance()
-        self.files: list[str] = []
+        self.all_files: list[str] = []   # every photo that's open
+        self.files: list[str] = []       # the ones shown, after the RAW / JPEG filter
+        self.thumb_icons: dict[str, QIcon] = {}
+        self.file_filter = self.store.get("file_filter", "all")
         self.current: str | None = None
         self.preview_arr: np.ndarray | None = None
         self.grain_scale = 0.3
@@ -75,6 +79,8 @@ class MainWindow(QMainWindow):
 
         self.render_timer = QTimer(self, singleShot=True, interval=40, timeout=self._render)
         self.toast_timer = QTimer(self, singleShot=True, interval=3500, timeout=lambda: self.toast.hide())
+        self.queue = ExportQueue(self)
+        self.queue.job_finished.connect(self._export_finished)
 
         root = QWidget(); root.setObjectName("root")
         lay = QHBoxLayout(root); lay.setContentsMargins(0, 0, 0, 0); lay.setSpacing(0)
@@ -212,7 +218,9 @@ class MainWindow(QMainWindow):
         self.zoom_btn.setPopupMode(QToolButton.InstantPopup)
         self.zoom_btn.setMinimumWidth(56)
         self.zoom_btn.setEnabled(False)
-        tl.addWidget(self.photo_name, 1); tl.addWidget(self.zoom_btn); tl.addWidget(self.compare_btn)
+        self.queue_btn = QueueButton(self.queue)
+        tl.addWidget(self.photo_name, 1); tl.addWidget(self.queue_btn); tl.addSpacing(2)
+        tl.addWidget(self.zoom_btn); tl.addWidget(self.compare_btn)
         tl.addSpacing(4); tl.addWidget(self.export_btn)
 
         self.canvas = QWidget()
@@ -258,7 +266,20 @@ class MainWindow(QMainWindow):
         self.filmstrip.setAccessibleName("Photos")
         self.filmstrip.hide()
 
-        lay.addWidget(top); lay.addWidget(self.canvas, 1); lay.addWidget(self.filmstrip)
+        # All / RAW / JPEG, shown only when the open photos include both RAW files and JPEGs
+        self.kind_bar = QWidget(); self.kind_bar.setObjectName("kindbar")
+        kl = QHBoxLayout(self.kind_bar); kl.setContentsMargins(12, 6, 12, 0); kl.setSpacing(4)
+        self.kind_group = QButtonGroup(self); self.kind_group.setExclusive(True)
+        self.kind_btns: dict[str, QToolButton] = {}
+        for kind in ("all", "raw", "jpeg"):
+            b = QToolButton(); b.setObjectName("chip"); b.setCheckable(True)
+            b.clicked.connect(lambda _=False, k=kind: self._set_file_filter(k))
+            self.kind_group.addButton(b); kl.addWidget(b)
+            self.kind_btns[kind] = b
+        kl.addStretch(1)
+        self.kind_bar.hide()
+
+        lay.addWidget(top); lay.addWidget(self.canvas, 1); lay.addWidget(self.kind_bar); lay.addWidget(self.filmstrip)
         self._placeholder = QIcon(self._blank(96, 64))
         return center
 
@@ -400,6 +421,7 @@ class MainWindow(QMainWindow):
         for sec in self.sections:
             sec.refresh_icons()
         self.chat.refresh_theme()
+        self.queue_btn.refresh()
         self._placeholder = QIcon(self._blank(96, 64))
         self.toast.setStyleSheet(f"background: {theme.c('text')}; color: {theme.c('bg')}; border-radius: 8px; padding: 8px 12px;")
         if self.look:
@@ -730,30 +752,69 @@ class MainWindow(QMainWindow):
         self.set_files(files)
 
     def set_files(self, files):
-        self.files = list(files)
+        self.all_files = list(files)
+        self.thumb_icons.clear()
         if files:
             folder = os.path.dirname(files[0])
             self.store.set("last_folder", folder)
             self.folder_btn.setText(os.path.basename(os.path.normpath(folder)) or folder)
             self.folder_btn.setToolTip(folder)
+        self._show_files()
+
+    def _visible_kind(self) -> str:
+        """The RAW / JPEG filter in effect: the remembered choice, if these photos have both kinds."""
+        return self.file_filter if imageio.has_raw_and_jpeg(self.all_files) else "all"
+
+    def _set_file_filter(self, kind):
+        self.file_filter = kind
+        self.store.set("file_filter", kind)
+        self._show_files()
+
+    def _update_kind_bar(self):
+        mixed = imageio.has_raw_and_jpeg(self.all_files)
+        self.kind_bar.setVisible(mixed)
+        if bool(self.filmstrip.property("joined")) != mixed:   # one line above the switch, none under it
+            self.filmstrip.setProperty("joined", mixed)
+            self.filmstrip.style().unpolish(self.filmstrip); self.filmstrip.style().polish(self.filmstrip)
+        if not mixed:
+            return
+        counts = {k: len(imageio.filter_photos(self.all_files, k)) for k in ("all", "raw", "jpeg")}
+        for kind, label in (("all", "All"), ("raw", "RAW"), ("jpeg", "JPEG")):
+            b = self.kind_btns[kind]
+            b.setText(f"{label}  {counts[kind]}")
+            b.setToolTip({"all": "Show every photo", "raw": "Show only RAW files",
+                          "jpeg": "Show only JPEGs"}[kind])
+            b.setChecked(kind == self._visible_kind())
+
+    def _show_files(self):
+        """Fill the filmstrip with the photos that pass the filter, keeping the current photo if it's still there."""
+        self.files = imageio.filter_photos(self.all_files, self._visible_kind())
+        self._update_kind_bar()
+        keep = self.current if self.current in self.files else None
         self.filmstrip.blockSignals(True)
         self.filmstrip.clear()
         self.thumbs.clear()
         for path in self.files:
-            item = QListWidgetItem(self._placeholder, "")
+            item = QListWidgetItem(self.thumb_icons.get(path, self._placeholder), "")
             item.setData(PATH_ROLE, path)
             item.setToolTip(os.path.basename(path))
             item.setSizeHint(QSize(104, 74))
             self.filmstrip.addItem(item)
             self.thumbs[path] = item
-            job = thumbnail_job(path, 200)
-            job.signals.done.connect(self._thumb_ready)
-            self.pool.start(job, priority=-1)
+            if path not in self.thumb_icons:
+                job = thumbnail_job(path, 200)
+                job.signals.done.connect(self._thumb_ready)
+                self.pool.start(job, priority=-1)
         self.filmstrip.blockSignals(False)
         self.filmstrip.setVisible(len(self.files) > 1)
         if self.files:
-            self.filmstrip.setCurrentRow(0)
-            self._photo_changed(self.filmstrip.currentItem())
+            row = self.files.index(keep) if keep else 0
+            self.filmstrip.setCurrentRow(row)
+            if keep:
+                self._update_photo_name()
+            else:
+                self.current = None
+                self._photo_changed(self.filmstrip.currentItem())
         else:
             self.current = None
             self.preview_arr = None
@@ -761,10 +822,17 @@ class MainWindow(QMainWindow):
             self.zoom_btn.setEnabled(False)
             self.photo_name.setText("")
 
+    def _update_photo_name(self):
+        if self.current:
+            n = f"   {self.filmstrip.currentRow() + 1} of {len(self.files)}" if len(self.files) > 1 else ""
+            self.photo_name.setText(f"{os.path.basename(self.current)}{n}")
+
     def _thumb_ready(self, path, qimg):
+        icon = QIcon(QPixmap.fromImage(qimg))
+        self.thumb_icons[path] = icon
         item = self.thumbs.get(path)
         if item is not None:
-            item.setIcon(QIcon(QPixmap.fromImage(qimg)))
+            item.setIcon(icon)
 
     def _photo_changed(self, item, _prev=None):
         if item is None:
@@ -898,8 +966,26 @@ class MainWindow(QMainWindow):
             self.show_toast("Open some photos first.")
             return
         look = dict(self.look, name=self.look["name"] + (" (edited)" if self._edited() else ""))
-        ExportDialog(self, self.store, self.files, self._selected_files(), look,
-                     copy.deepcopy(self.params), self.strength).exec()
+        all_label = {"raw": "All RAW photos", "jpeg": "All JPEGs"}.get(self._visible_kind(), "All photos in the folder")
+        dlg = ExportDialog(self, self.store, self.files, self._selected_files(), look,
+                           copy.deepcopy(self.params), self.strength, all_label)
+        if dlg.exec() != QDialog.Accepted or dlg.spec is None:
+            return
+        waiting = len(self.queue.active_jobs())
+        self.queue.add(dlg.spec)
+        n = plural(len(dlg.spec.files), "photo")
+        self.show_toast(f"Exporting {n} with {look['name']}." if not waiting else
+                        f"Added {n} with {look['name']} to the export queue.")
+
+    def _export_finished(self, job):
+        name = job.spec.look_name
+        if job.state == "cancelled":
+            self.show_toast(f"Export with {name} cancelled. {plural(job.exported, 'photo')} saved.")
+        elif job.errors:
+            self.show_toast(f"Exported {job.exported} of {job.total} with {name}. "
+                            f"{plural(len(job.errors), 'photo')} couldn't be exported; open Exports for details.", 6000)
+        else:
+            self.show_toast(f"Exported {plural(job.exported, 'photo')} with {name}.")
 
     def _export_cube(self, look=None):
         look = look if isinstance(look, dict) else None
@@ -967,5 +1053,19 @@ class MainWindow(QMainWindow):
         return super().eventFilter(obj, e)
 
     def closeEvent(self, e):
+        left = self.queue.photos_left()
+        if left:
+            box = QMessageBox(self)
+            box.setWindowTitle("Exports still running")
+            box.setText(f"Emulsa is still exporting. {plural(left, 'photo')} {'hasn’t' if left == 1 else 'haven’t'} been saved yet.")
+            box.setInformativeText("If you quit now, the export stops. Photos already saved are kept.")
+            keep = box.addButton("Keep Exporting", QMessageBox.RejectRole)
+            box.addButton("Quit", QMessageBox.DestructiveRole)
+            box.setDefaultButton(keep)
+            box.exec()
+            if box.clickedButton() is keep:
+                e.ignore()
+                return
+            self.queue.cancel_all(wait_ms=30000)
         self.store.set("geometry", bytes(self.saveGeometry().toBase64()).decode())
         super().closeEvent(e)

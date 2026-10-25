@@ -162,7 +162,9 @@ def stylesheet() -> str:
     QListWidget::item:hover, QTreeWidget::item:hover {{ background: {k['hover']}; }}
     QListWidget::item:selected, QTreeWidget::item:selected {{ background: {k['selected']}; color: {k['text']}; }}
     QTreeWidget::branch {{ background: transparent; border-image: none; image: none; }}
+    QWidget#kindbar {{ background: {k['bg']}; border-top: 1px solid {k['line']}; }}
     QListWidget#filmstrip {{ background: {k['bg']}; border-top: 1px solid {k['line']}; }}
+    QListWidget#filmstrip[joined="true"] {{ border-top: none; }}
     QListWidget#filmstrip::item {{ margin: 3px; border-radius: 4px; border: 2px solid transparent; }}
     QListWidget#filmstrip::item:selected {{ background: transparent; border: 2px solid {k['accent']}; }}
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Export queue: exports now run in the background, so you can keep working while they save. Queue as many as you like, for example the same folder in two looks; they run one after another. The Exports button in the top bar shows progress, and its panel lets you cancel a job or open its folder. If you quit with exports still running, Emulsa asks first.
+- RAW / JPEG switch: when a folder has both RAW files and JPEGs, as when a camera shoots RAW+JPEG, a switch above the photos shows all of them, only the RAW files or only the JPEGs. Emulsa remembers your choice, and exporting "all photos" follows it.
+
 ## 0.6.0
 
 - 23 new looks, for 100 in all. **Movies**: grades inspired by Dune, Blade Runner 2049, The Dark Knight, Oppenheimer, The Brutalist, The Shining, There Will Be Blood, The Lighthouse, Se7en, The Grand Budapest Hotel, All Quiet on the Western Front, The Wind Rises, Pulp Fiction, Nosferatu and The Batman. **Moods**: Teal & Orange, Golden Hour, Matte Moody, Neon Night, Airy Bright, Nordic Cold, Sun-Bleached and Film Noir.

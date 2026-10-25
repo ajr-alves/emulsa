@@ -29,6 +29,28 @@ def is_supported(path: str) -> bool:
     return os.path.splitext(path)[1].lower() in SUPPORTED
 
 
+JPEG_EXT = {".jpg", ".jpeg"}
+
+
+def photo_kind(path: str) -> str:
+    """"raw", "jpeg" or "other" (PNG, TIFF and the rest)."""
+    ext = os.path.splitext(path)[1].lower()
+    return "raw" if ext in RAW_EXT else "jpeg" if ext in JPEG_EXT else "other"
+
+
+def has_raw_and_jpeg(files: list[str]) -> bool:
+    """True when there are both RAW files and JPEGs, as when a camera shoots RAW+JPEG."""
+    kinds = {photo_kind(f) for f in files}
+    return "raw" in kinds and "jpeg" in kinds
+
+
+def filter_photos(files: list[str], kind: str) -> list[str]:
+    """Only the RAW files (kind "raw"), only the JPEGs ("jpeg"), or everything ("all")."""
+    if kind not in ("raw", "jpeg"):
+        return list(files)
+    return [f for f in files if photo_kind(f) == kind]
+
+
 def list_photos(folder: str) -> list[str]:
     try:
         names = sorted(os.listdir(folder), key=str.lower)

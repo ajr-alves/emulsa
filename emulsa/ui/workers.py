@@ -1,11 +1,10 @@
 """Background jobs so the window never freezes while images load or render."""
 from __future__ import annotations
 
-import os
 import traceback
 
 import numpy as np
-from PySide6.QtCore import QObject, QRectF, QRunnable, QThread, Signal
+from PySide6.QtCore import QObject, QRectF, QRunnable, Signal
 from PySide6.QtGui import QImage
 
 from .. import imageio
@@ -43,9 +42,15 @@ class Job(QRunnable):
             result = self.fn()
         except Exception as exc:  # report, never crash the pool
             traceback.print_exc()
-            self.signals.failed.emit(self.key, exc)
+            self._emit(self.signals.failed, exc)
             return
-        self.signals.done.emit(self.key, result)
+        self._emit(self.signals.done, result)
+
+    def _emit(self, signal, value):
+        try:
+            signal.emit(self.key, value)
+        except RuntimeError:  # whoever asked has gone (the window closed while this ran); nothing to report to
+            pass
 
 
 def thumbnail_job(path: str, size: int) -> Job:
@@ -91,47 +96,3 @@ def look_icons_job(token: int, img: np.ndarray, looks: list[dict]) -> Job:
             out[look["id"]] = to_qimage(render(img, look["params"], scale=0.1, lut=bake_lut(look["params"], 17)))
         return out
     return Job(token, run)
-
-
-class ExportThread(QThread):
-    """Exports a list of photos with one look. Emits progress per file and a summary at the end."""
-    progress = Signal(int, int, str)          # done, total, current file name
-    finished_all = Signal(int, list)          # exported count, [(file, error)]
-
-    def __init__(self, files, params, strength, out_dir, fmt, quality, long_edge, suffix):
-        super().__init__()
-        self.files, self.params, self.strength = files, params, strength
-        self.out_dir, self.fmt, self.quality = out_dir, fmt, quality
-        self.long_edge, self.suffix = long_edge, suffix
-        self._cancel = False
-
-    def cancel(self):
-        self._cancel = True
-
-    def run(self):
-        ext = {"JPEG": ".jpg", "TIFF": ".tif", "PNG": ".png"}[self.fmt]
-        lut = bake_lut(self.params)
-        errors, count = [], 0
-        for i, path in enumerate(self.files):
-            if self._cancel:
-                break
-            name = os.path.splitext(os.path.basename(path))[0]
-            self.progress.emit(i, len(self.files), os.path.basename(path))
-            try:
-                arr, exif = imageio.load_full(path)
-                full_width = arr.shape[1]
-                arr = imageio.resize_long_edge(arr, self.long_edge)
-                out = render(arr, self.params, strength=self.strength, scale=arr.shape[1] / full_width, lut=lut)
-                target = os.path.join(self.out_dir, f"{name}{self.suffix}{ext}")
-                if os.path.dirname(os.path.abspath(target)) != os.path.abspath(self.out_dir):
-                    raise ValueError("refusing to write outside the export folder")
-                n = 2
-                while os.path.exists(target):
-                    target = os.path.join(self.out_dir, f"{name}{self.suffix}-{n}{ext}")
-                    n += 1
-                imageio.save(target, out, self.fmt, self.quality, exif)
-                count += 1
-            except Exception as exc:
-                errors.append((os.path.basename(path), str(exc)))
-        self.progress.emit(len(self.files), len(self.files), "")
-        self.finished_all.emit(count, errors)
