@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emulsa: free film looks and presets for your photos</title>
+<meta name="description" content="Emulsa is a free, open-source app that gives your photos the look of film: 100 looks, from Fujifilm simulations, Kodak Portra and Cinestill to grades inspired by films. RAW support, batch export and .cube LUTs. For Windows, macOS and Linux.">
+<link rel="canonical" href="https://ajr-alves.github.io/emulsa/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1c1b" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/img/mark.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Emulsa: free film looks and presets for your photos">
+<meta property="og:site_name" content="Emulsa">
+<meta property="og:description" content="A free, open-source desktop app with 100 looks, from Kodak Portra to Blade Runner 2049. RAW support, batch export and .cube LUTs.">
+<meta property="og:image" content="https://ajr-alves.github.io/emulsa/assets/img/og.png">
+<meta property="og:url" content="https://ajr-alves.github.io/emulsa/">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Emulsa logo and the words Film looks for your photos">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Emulsa",
+ "alternateName": "Emulsa film looks",
+ "description": "Free, open-source desktop app that gives photos the look of film: 100 looks including Fujifilm simulations, Kodak Portra, Ilford and Cinestill stocks and grades inspired by films, with RAW support, batch export and .cube LUT export.",
+ "applicationCategory": "MultimediaApplication",
+ "applicationSubCategory": "Photo editing",
+ "operatingSystem": "Windows 10, Windows 11, macOS 11 or later, Linux",
+ "url": "https://ajr-alves.github.io/emulsa/",
+ "downloadUrl": "https://github.com/ajr-alves/emulsa/releases/latest",
+ "softwareVersion": "0.6.0",
+ "license": "https://opensource.org/licenses/MIT",
+ "isAccessibleForFree": true,
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "EUR"
+ },
+ "image": "https://ajr-alves.github.io/emulsa/assets/img/og.png",
+ "screenshot": "https://ajr-alves.github.io/emulsa/assets/img/screenshot.webp",
+ "author": {
+  "@type": "Person",
+  "name": "ajr-alves",
+  "url": "https://github.com/ajr-alves"
+ },
+ "codeRepository": "https://github.com/ajr-alves/emulsa",
+ "sameAs": [
+  "https://github.com/ajr-alves/emulsa"
+ ]
+}
+</script>
+<link rel="preload" href="assets/fonts/BricolageGrotesque-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Emulsa home">
+      <img src="assets/img/mark.svg" alt="" width="28" height="28">
+      <span class="wordmark">emulsa</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#try">Try it</a>
+      <a href="#looks">Looks</a>
+      <a href="#features">Features</a>
+      <a href="#assistant">Assistant</a>
+    </nav>
+    <div class="nav-end">
+      <a class="nav-gh" href="https://github.com/ajr-alves/emulsa" aria-label="Emulsa on GitHub">
+        <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="btn btn-primary btn-sm" href="#download">Download</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="wrap hero-inner">
+      <svg class="develop" viewBox="0 0 100 100" role="img" aria-label="The Emulsa mark: a lowercase e made of film grain">
+        <rect class="tile" x="6" y="6" width="88" height="88" rx="20" fill="#171715"/>
+        <g class="specks">
+          <circle cx="85.8" cy="42.1" r="0.49" style="--d:0.678"/>
+          <circle cx="84.0" cy="67.1" r="0.41" style="--d:0.693"/>
+          <circle cx="21.7" cy="23.5" r="0.67" style="--d:0.784"/>
+          <circle cx="73.3" cy="23.1" r="0.64" style="--d:0.875"/>
+          <circle cx="86.5" cy="62.0" r="0.47" style="--d:0.711"/>
+          <circle cx="13.1" cy="85.8" r="0.58" style="--d:0.42"/>
+          <circle cx="22.0" cy="81.2" r="0.47" style="--d:0.585"/>
+          <circle cx="13.4" cy="45.4" r="0.41" style="--d:0.407"/>
+          <circle cx="12.3" cy="72.7" r="0.41" style="--d:0.306"/>
+          <circle cx="54.3" cy="36.8" r="0.53" style="--d:0.583"/>
+          <circle cx="50.9" cy="64.6" r="0.51" style="--d:0.729"/>
+          <circle cx="83.6" cy="65.1" r="0.66" style="--d:0.407"/>
+          <circle cx="83.6" cy="31.7" r="0.55" style="--d:0.463"/>
+          <circle cx="83.7" cy="75.8" r="0.4" style="--d:0.507"/>
+          <circle cx="17.5" cy="30.3" r="0.38" style="--d:0.718"/>
+          <circle cx="80.2" cy="23.7" r="0.6" style="--d:0.612"/>
+          <circle cx="79.1" cy="85.5" r="0.43" style="--d:0.669"/>
+          <circle cx="87.2" cy="75.3" r="0.41" style="--d:0.754"/>
+          <circle cx="13.5" cy="54.1" r="0.5" style="--d:0.536"/>
+          <circle cx="13.4" cy="37.2" r="0.57" style="--d:0.775"/>
+          <circle cx="50.9" cy="16.9" r="0.69" style="--d:0.844"/>
+          <circle cx="71.9" cy="85.8" r="0.39" style="--d:0.352"/>
+          <circle cx="32.2" cy="15.0" r="0.62" style="--d:0.86"/>
+          <circle cx="65.2" cy="18.8" r="0.37" style="--d:0.733"/>
+          <circle cx="17.5" cy="83.3" r="0.57" style="--d:0.378"/>
+          <circle cx="17.1" cy="77.6" r="0.51" style="--d:0.572"/>
+          <circle cx="13.4" cy="31.0" r="0.36" style="--d:0.675"/>
+        </g>
+        <g class="grains">
+          <circle cx="36.8" cy="20.5" r="0.47" style="--d:0.285"/>
+          <circle cx="40.4" cy="20.5" r="1.28" style="--d:0.327"/>
+          <circle cx="44.0" cy="20.5" r="1.45" style="--d:0.433"/>
+          <circle cx="47.6" cy="20.5" r="1.37" style="--d:0.333"/>
+          <circle cx="51.2" cy="20.5" r="1.59" style="--d:0.359"/>
+          <circle cx="54.8" cy="20.5" r="1.33" style="--d:0.394"/>
+          <circle cx="58.4" cy="20.5" r="1.5" style="--d:0.308"/>
+          <circle cx="62.0" cy="20.5" r="0.76" style="--d:0.405"/>
+          <circle cx="31.4" cy="23.6" r="0.56" style="--d:0.306"/>
+          <circle cx="35.0" cy="23.6" r="1.77" style="--d:0.362"/>
+          <circle cx="38.6" cy="23.6" r="1.54" style="--d:0.203"/>
+          <circle cx="42.2" cy="23.6" r="1.46" style="--d:0.27"/>
+          <circle cx="45.8" cy="23.6" r="1.33" style="--d:0.232"/>
+          <circle cx="49.4" cy="23.6" r="1.53" style="--d:0.427"/>
+          <circle cx="53.0" cy="23.6" r="1.32" style="--d:0.413"/>
+          <circle cx="56.6" cy="23.6" r="1.5" style="--d:0.265"/>
+          <circle cx="60.2" cy="23.6" r="1.33" style="--d:0.515"/>
+          <circle cx="63.8" cy="23.6" r="1.34" style="--d:0.526"/>
+          <circle cx="67.4" cy="23.6" r="0.98" style="--d:0.464"/>
+          <circle cx="29.6" cy="26.7" r="1.46" style="--d:0.295"/>
+          <circle cx="33.2" cy="26.7" r="1.49" style="--d:0.196"/>
+          <circle cx="36.8" cy="26.7" r="1.67" style="--d:0.175"/>
+          <circle cx="40.4" cy="26.7" r="1.36" style="--d:0.319"/>
+          <circle cx="44.0" cy="26.7" r="1.4" style="--d:0.217"/>
+          <circle cx="47.6" cy="26.7" r="1.58" style="--d:0.264"/>
+          <circle cx="51.2" cy="26.7" r="1.73" style="--d:0.293"/>
+          <circle cx="54.8" cy="26.7" r="1.56" style="--d:0.255"/>
+          <circle cx="58.4" cy="26.7" r="1.48" style="--d:0.378"/>
+          <circle cx="62.0" cy="26.7" r="1.74" style="--d:0.388"/>
+          <circle cx="65.6" cy="26.7" r="1.32" style="--d:0.503"/>
+          <circle cx="69.2" cy="26.7" r="1.69" style="--d:0.437"/>
+          <circle cx="72.8" cy="26.7" r="0.43" style="--d:0.483"/>
+          <circle cx="24.2" cy="29.8" r="0.39" style="--d:0.244"/>
+          <circle cx="27.8" cy="29.8" r="1.43" style="--d:0.299"/>
+          <circle cx="31.4" cy="29.8" r="1.36" style="--d:0.263"/>
+          <circle cx="35.0" cy="29.8" r="1.35" style="--d:0.234"/>
+          <circle cx="38.6" cy="29.8" r="1.44" style="--d:0.429"/>
+          <circle cx="42.2" cy="29.8" r="1.67" style="--d:0.443"/>
+          <circle cx="45.8" cy="29.8" r="1.38" style="--d:0.419"/>
+          <circle cx="49.4" cy="29.8" r="1.56" style="--d:0.401"/>
+          <circle cx="53.0" cy="29.8" r="1.59" style="--d:0.318"/>
+          <circle cx="56.6" cy="29.8" r="1.47" style="--d:0.312"/>
+          <circle cx="60.2" cy="29.8" r="1.55" style="--d:0.342"/>
+          <circle cx="63.8" cy="29.8" r="1.33" style="--d:0.303"/>
+          <circle cx="67.4" cy="29.8" r="1.33" style="--d:0.492"/>
+          <circle cx="71.0" cy="29.8" r="1.39" style="--d:0.415"/>
+          <circle cx="74.6" cy="29.8" r="0.99" style="--d:0.542"/>
+          <circle cx="22.4" cy="32.9" r="0.65" style="--d:0.208"/>
+          <circle cx="26.0" cy="32.9" r="1.61" style="--d:0.366"/>
+          <circle cx="29.6" cy="32.9" r="1.49" style="--d:0.353"/>
+          <circle cx="33.2" cy="32.9" r="1.44" style="--d:0.157"/>
+          <circle cx="36.8" cy="32.9" r="1.56" style="--d:0.224"/>
+          <circle cx="40.4" cy="32.9" r="1.5" style="--d:0.414"/>
+          <circle cx="44.0" cy="32.9" r="1.43" style="--d:0.319"/>
+          <circle cx="47.6" cy="32.9" r="1.42" style="--d:0.462"/>
+          <circle cx="51.2" cy="32.9" r="1.35" style="--d:0.331"/>
+          <circle cx="54.8" cy="32.9" r="1.73" style="--d:0.265"/>
+          <circle cx="58.4" cy="32.9" r="1.66" style="--d:0.42"/>
+          <circle cx="62.0" cy="32.9" r="1.61" style="--d:0.472"/>
+          <circle cx="65.6" cy="32.9" r="1.41" style="--d:0.36"/>
+          <circle cx="69.2" cy="32.9" r="1.56" style="--d:0.329"/>
+          <circle cx="72.8" cy="32.9" r="1.54" style="--d:0.406"/>
+          <circle cx="76.4" cy="32.9" r="1.29" style="--d:0.579"/>
+          <circle cx="20.6" cy="36.1" r="0.65" style="--d:0.293"/>
+          <circle cx="24.2" cy="36.1" r="1.69" style="--d:0.148"/>
+          <circle cx="27.8" cy="36.1" r="1.63" style="--d:0.195"/>
+          <circle cx="31.4" cy="36.1" r="1.43" style="--d:0.174"/>
+          <circle cx="35.0" cy="36.1" r="1.74" style="--d:0.179"/>
+          <circle cx="38.6" cy="36.1" r="1.8" style="--d:0.378"/>
+          <circle cx="42.2" cy="36.1" r="0.54" style="--d:0.239"/>
+          <circle cx="60.2" cy="36.1" r="1.34" style="--d:0.41"/>
+          <circle cx="63.8" cy="36.1" r="1.35" style="--d:0.397"/>
+          <circle cx="67.4" cy="36.1" r="1.49" style="--d:0.348"/>
+          <circle cx="71.0" cy="36.1" r="1.64" style="--d:0.498"/>
+          <circle cx="74.6" cy="36.1" r="1.37" style="--d:0.363"/>
+          <circle cx="78.2" cy="36.1" r="1.34" style="--d:0.506"/>
+          <circle cx="18.8" cy="39.2" r="0.4" style="--d:0.125"/>
+          <circle cx="22.4" cy="39.2" r="1.52" style="--d:0.216"/>
+          <circle cx="26.0" cy="39.2" r="1.32" style="--d:0.179"/>
+          <circle cx="29.6" cy="39.2" r="1.6" style="--d:0.209"/>
+          <circle cx="33.2" cy="39.2" r="1.64" style="--d:0.399"/>
+          <circle cx="36.8" cy="39.2" r="1.1" style="--d:0.372"/>
+          <circle cx="62.0" cy="39.2" r="0.54" style="--d:0.353"/>
+          <circle cx="65.6" cy="39.2" r="1.56" style="--d:0.514"/>
+          <circle cx="69.2" cy="39.2" r="1.69" style="--d:0.36"/>
+          <circle cx="72.8" cy="39.2" r="1.44" style="--d:0.421"/>
+          <circle cx="76.4" cy="39.2" r="1.61" style="--d:0.551"/>
+          <circle cx="80.0" cy="39.2" r="1.12" style="--d:0.513"/>
+          <circle cx="20.6" cy="42.3" r="1.57" style="--d:0.129"/>
+          <circle cx="24.2" cy="42.3" r="1.56" style="--d:0.366"/>
+          <circle cx="27.8" cy="42.3" r="1.51" style="--d:0.187"/>
+          <circle cx="31.4" cy="42.3" r="1.68" style="--d:0.213"/>
+          <circle cx="35.0" cy="42.3" r="0.86" style="--d:0.357"/>
+          <circle cx="67.4" cy="42.3" r="1.73" style="--d:0.382"/>
+          <circle cx="71.0" cy="42.3" r="1.51" style="--d:0.389"/>
+          <circle cx="74.6" cy="42.3" r="1.6" style="--d:0.349"/>
+          <circle cx="78.2" cy="42.3" r="1.33" style="--d:0.368"/>
+          <circle cx="81.8" cy="42.3" r="0.66" style="--d:0.506"/>
+          <circle cx="18.8" cy="45.4" r="1.48" style="--d:0.157"/>
+          <circle cx="22.4" cy="45.4" r="1.62" style="--d:0.261"/>
+          <circle cx="26.0" cy="45.4" r="1.59" style="--d:0.219"/>
+          <circle cx="29.6" cy="45.4" r="1.75" style="--d:0.255"/>
+          <circle cx="33.2" cy="45.4" r="1.67" style="--d:0.396"/>
+          <circle cx="36.8" cy="45.4" r="1.43" style="--d:0.292"/>
+          <circle cx="40.4" cy="45.4" r="1.47" style="--d:0.33"/>
+          <circle cx="44.0" cy="45.4" r="1.6" style="--d:0.418"/>
+          <circle cx="47.6" cy="45.4" r="1.31" style="--d:0.263"/>
+          <circle cx="51.2" cy="45.4" r="1.51" style="--d:0.271"/>
+          <circle cx="54.8" cy="45.4" r="1.38" style="--d:0.474"/>
+          <circle cx="58.4" cy="45.4" r="1.35" style="--d:0.467"/>
+          <circle cx="62.0" cy="45.4" r="1.33" style="--d:0.34"/>
+          <circle cx="65.6" cy="45.4" r="1.65" style="--d:0.34"/>
+          <circle cx="69.2" cy="45.4" r="1.36" style="--d:0.492"/>
+          <circle cx="72.8" cy="45.4" r="1.41" style="--d:0.558"/>
+          <circle cx="76.4" cy="45.4" r="1.48" style="--d:0.387"/>
+          <circle cx="80.0" cy="45.4" r="1.69" style="--d:0.591"/>
+          <circle cx="17.0" cy="48.5" r="0.58" style="--d:0.309"/>
+          <circle cx="20.6" cy="48.5" r="1.34" style="--d:0.254"/>
+          <circle cx="24.2" cy="48.5" r="1.5" style="--d:0.224"/>
+          <circle cx="27.8" cy="48.5" r="1.55" style="--d:0.16"/>
+          <circle cx="31.4" cy="48.5" r="1.7" style="--d:0.159"/>
+          <circle cx="35.0" cy="48.5" r="1.67" style="--d:0.405"/>
+          <circle cx="38.6" cy="48.5" r="1.69" style="--d:0.239"/>
+          <circle cx="42.2" cy="48.5" r="1.43" style="--d:0.37"/>
+          <circle cx="45.8" cy="48.5" r="1.49" style="--d:0.274"/>
+          <circle cx="49.4" cy="48.5" r="1.46" style="--d:0.43"/>
+          <circle cx="53.0" cy="48.5" r="1.7" style="--d:0.389"/>
+          <circle cx="56.6" cy="48.5" r="1.73" style="--d:0.328"/>
+          <circle cx="60.2" cy="48.5" r="1.37" style="--d:0.314"/>
+          <circle cx="63.8" cy="48.5" r="1.38" style="--d:0.465"/>
+          <circle cx="67.4" cy="48.5" r="1.4" style="--d:0.317"/>
+          <circle cx="71.0" cy="48.5" r="1.41" style="--d:0.372"/>
+          <circle cx="74.6" cy="48.5" r="1.52" style="--d:0.47"/>
+          <circle cx="78.2" cy="48.5" r="1.57" style="--d:0.559"/>
+          <circle cx="81.8" cy="48.5" r="1.35" style="--d:0.514"/>
+          <circle cx="18.8" cy="51.6" r="1.8" style="--d:0.166"/>
+          <circle cx="22.4" cy="51.6" r="1.42" style="--d:0.34"/>
+          <circle cx="26.0" cy="51.6" r="1.3" style="--d:0.177"/>
+          <circle cx="29.6" cy="51.6" r="1.49" style="--d:0.145"/>
+          <circle cx="33.2" cy="51.6" r="1.47" style="--d:0.224"/>
+          <circle cx="36.8" cy="51.6" r="1.55" style="--d:0.283"/>
+          <circle cx="40.4" cy="51.6" r="1.73" style="--d:0.202"/>
+          <circle cx="44.0" cy="51.6" r="1.61" style="--d:0.246"/>
+          <circle cx="47.6" cy="51.6" r="1.53" style="--d:0.309"/>
+          <circle cx="51.2" cy="51.6" r="1.58" style="--d:0.375"/>
+          <circle cx="54.8" cy="51.6" r="1.6" style="--d:0.28"/>
+          <circle cx="58.4" cy="51.6" r="1.32" style="--d:0.353"/>
+          <circle cx="62.0" cy="51.6" r="1.7" style="--d:0.5"/>
+          <circle cx="65.6" cy="51.6" r="1.65" style="--d:0.538"/>
+          <circle cx="69.2" cy="51.6" r="1.69" style="--d:0.472"/>
+          <circle cx="72.8" cy="51.6" r="1.66" style="--d:0.496"/>
+          <circle cx="76.4" cy="51.6" r="1.48" style="--d:0.484"/>
+          <circle cx="80.0" cy="51.6" r="1.48" style="--d:0.388"/>
+          <circle cx="17.0" cy="54.8" r="0.5" style="--d:0.097"/>
+          <circle cx="20.6" cy="54.8" r="1.35" style="--d:0.108"/>
+          <circle cx="24.2" cy="54.8" r="1.59" style="--d:0.346"/>
+          <circle cx="27.8" cy="54.8" r="1.33" style="--d:0.309"/>
+          <circle cx="31.4" cy="54.8" r="1.33" style="--d:0.39"/>
+          <circle cx="35.0" cy="54.8" r="1.39" style="--d:0.169"/>
+          <circle cx="38.6" cy="54.8" r="1.37" style="--d:0.338"/>
+          <circle cx="42.2" cy="54.8" r="1.45" style="--d:0.315"/>
+          <circle cx="45.8" cy="54.8" r="1.32" style="--d:0.392"/>
+          <circle cx="49.4" cy="54.8" r="1.3" style="--d:0.304"/>
+          <circle cx="53.0" cy="54.8" r="1.37" style="--d:0.489"/>
+          <circle cx="56.6" cy="54.8" r="1.35" style="--d:0.274"/>
+          <circle cx="60.2" cy="54.8" r="1.46" style="--d:0.406"/>
+          <circle cx="18.8" cy="57.9" r="1.32" style="--d:0.28"/>
+          <circle cx="22.4" cy="57.9" r="1.31" style="--d:0.336"/>
+          <circle cx="26.0" cy="57.9" r="1.69" style="--d:0.31"/>
+          <circle cx="29.6" cy="57.9" r="1.58" style="--d:0.317"/>
+          <circle cx="33.2" cy="57.9" r="1.38" style="--d:0.355"/>
+          <circle cx="36.8" cy="57.9" r="1.36" style="--d:0.4"/>
+          <circle cx="40.4" cy="57.9" r="1.36" style="--d:0.275"/>
+          <circle cx="44.0" cy="57.9" r="1.36" style="--d:0.373"/>
+          <circle cx="47.6" cy="57.9" r="1.36" style="--d:0.442"/>
+          <circle cx="51.2" cy="57.9" r="1.36" style="--d:0.45"/>
+          <circle cx="54.8" cy="57.9" r="1.36" style="--d:0.351"/>
+          <circle cx="58.4" cy="57.9" r="1.36" style="--d:0.46"/>
+          <circle cx="62.0" cy="57.9" r="1.36" style="--d:0.493"/>
+          <circle cx="20.6" cy="61.0" r="1.37" style="--d:0.247"/>
+          <circle cx="24.2" cy="61.0" r="1.41" style="--d:0.275"/>
+          <circle cx="27.8" cy="61.0" r="1.46" style="--d:0.229"/>
+          <circle cx="31.4" cy="61.0" r="1.46" style="--d:0.295"/>
+          <circle cx="35.0" cy="61.0" r="1.3" style="--d:0.316"/>
+          <circle cx="22.4" cy="64.1" r="1.36" style="--d:0.131"/>
+          <circle cx="26.0" cy="64.1" r="1.68" style="--d:0.286"/>
+          <circle cx="29.6" cy="64.1" r="1.75" style="--d:0.39"/>
+          <circle cx="33.2" cy="64.1" r="1.51" style="--d:0.376"/>
+          <circle cx="36.8" cy="64.1" r="1.68" style="--d:0.354"/>
+          <circle cx="62.0" cy="64.1" r="1.14" style="--d:0.375"/>
+          <circle cx="65.6" cy="64.1" r="1.52" style="--d:0.476"/>
+          <circle cx="20.6" cy="67.2" r="0.26" style="--d:0.249"/>
+          <circle cx="24.2" cy="67.2" r="1.34" style="--d:0.229"/>
+          <circle cx="27.8" cy="67.2" r="1.35" style="--d:0.343"/>
+          <circle cx="31.4" cy="67.2" r="1.45" style="--d:0.17"/>
+          <circle cx="35.0" cy="67.2" r="1.42" style="--d:0.352"/>
+          <circle cx="38.6" cy="67.2" r="1.67" style="--d:0.187"/>
+          <circle cx="42.2" cy="67.2" r="1.29" style="--d:0.345"/>
+          <circle cx="45.8" cy="67.2" r="0.49" style="--d:0.33"/>
+          <circle cx="53.0" cy="67.2" r="0.32" style="--d:0.297"/>
+          <circle cx="56.6" cy="67.2" r="0.98" style="--d:0.429"/>
+          <circle cx="60.2" cy="67.2" r="1.37" style="--d:0.394"/>
+          <circle cx="63.8" cy="67.2" r="1.31" style="--d:0.439"/>
+          <circle cx="67.4" cy="67.2" r="1.73" style="--d:0.53"/>
+          <circle cx="26.0" cy="70.4" r="1.54" style="--d:0.19"/>
+          <circle cx="29.6" cy="70.4" r="1.37" style="--d:0.144"/>
+          <circle cx="33.2" cy="70.4" r="1.54" style="--d:0.232"/>
+          <circle cx="36.8" cy="70.4" r="1.31" style="--d:0.341"/>
+          <circle cx="40.4" cy="70.4" r="1.54" style="--d:0.237"/>
+          <circle cx="44.0" cy="70.4" r="1.74" style="--d:0.244"/>
+          <circle cx="47.6" cy="70.4" r="1.69" style="--d:0.443"/>
+          <circle cx="51.2" cy="70.4" r="1.61" style="--d:0.397"/>
+          <circle cx="54.8" cy="70.4" r="1.42" style="--d:0.358"/>
+          <circle cx="58.4" cy="70.4" r="1.47" style="--d:0.485"/>
+          <circle cx="62.0" cy="70.4" r="1.38" style="--d:0.359"/>
+          <circle cx="65.6" cy="70.4" r="1.65" style="--d:0.459"/>
+          <circle cx="69.2" cy="70.4" r="1.54" style="--d:0.357"/>
+          <circle cx="72.8" cy="70.4" r="1.65" style="--d:0.43"/>
+          <circle cx="27.8" cy="73.5" r="1.55" style="--d:0.335"/>
+          <circle cx="31.4" cy="73.5" r="1.45" style="--d:0.377"/>
+          <circle cx="35.0" cy="73.5" r="1.4" style="--d:0.384"/>
+          <circle cx="38.6" cy="73.5" r="1.67" style="--d:0.275"/>
+          <circle cx="42.2" cy="73.5" r="1.74" style="--d:0.34"/>
+          <circle cx="45.8" cy="73.5" r="1.68" style="--d:0.288"/>
+          <circle cx="49.4" cy="73.5" r="1.66" style="--d:0.259"/>
+          <circle cx="53.0" cy="73.5" r="1.67" style="--d:0.364"/>
+          <circle cx="56.6" cy="73.5" r="1.63" style="--d:0.464"/>
+          <circle cx="60.2" cy="73.5" r="1.4" style="--d:0.482"/>
+          <circle cx="63.8" cy="73.5" r="1.53" style="--d:0.463"/>
+          <circle cx="67.4" cy="73.5" r="1.46" style="--d:0.538"/>
+          <circle cx="71.0" cy="73.5" r="1.31" style="--d:0.384"/>
+          <circle cx="74.6" cy="73.5" r="0.43" style="--d:0.373"/>
+          <circle cx="29.6" cy="76.6" r="0.82" style="--d:0.254"/>
+          <circle cx="33.2" cy="76.6" r="1.31" style="--d:0.225"/>
+          <circle cx="36.8" cy="76.6" r="1.43" style="--d:0.225"/>
+          <circle cx="40.4" cy="76.6" r="1.42" style="--d:0.29"/>
+          <circle cx="44.0" cy="76.6" r="1.61" style="--d:0.358"/>
+          <circle cx="47.6" cy="76.6" r="1.73" style="--d:0.34"/>
+          <circle cx="51.2" cy="76.6" r="1.5" style="--d:0.311"/>
+          <circle cx="54.8" cy="76.6" r="1.72" style="--d:0.457"/>
+          <circle cx="58.4" cy="76.6" r="1.74" style="--d:0.508"/>
+          <circle cx="62.0" cy="76.6" r="1.73" style="--d:0.391"/>
+          <circle cx="65.6" cy="76.6" r="1.46" style="--d:0.311"/>
+          <circle cx="69.2" cy="76.6" r="1.29" style="--d:0.316"/>
+          <circle cx="35.0" cy="79.7" r="1.03" style="--d:0.382"/>
+          <circle cx="38.6" cy="79.7" r="1.4" style="--d:0.189"/>
+          <circle cx="42.2" cy="79.7" r="1.4" style="--d:0.371"/>
+          <circle cx="45.8" cy="79.7" r="1.39" style="--d:0.352"/>
+          <circle cx="49.4" cy="79.7" r="1.39" style="--d:0.302"/>
+          <circle cx="53.0" cy="79.7" r="1.58" style="--d:0.437"/>
+          <circle cx="56.6" cy="79.7" r="1.71" style="--d:0.259"/>
+          <circle cx="60.2" cy="79.7" r="1.68" style="--d:0.304"/>
+          <circle cx="63.8" cy="79.7" r="1.38" style="--d:0.399"/>
+          <circle cx="67.4" cy="79.7" r="0.27" style="--d:0.306"/>
+          <circle cx="40.4" cy="82.8" r="0.48" style="--d:0.394"/>
+          <circle cx="44.0" cy="82.8" r="1.04" style="--d:0.261"/>
+          <circle cx="47.6" cy="82.8" r="1.34" style="--d:0.252"/>
+          <circle cx="51.2" cy="82.8" r="1.38" style="--d:0.244"/>
+          <circle cx="54.8" cy="82.8" r="1.17" style="--d:0.404"/>
+          <circle cx="58.4" cy="82.8" r="0.69" style="--d:0.374"/>
+        </g>
+      </svg>
+      <h1 class="hero-title">Film looks for your&nbsp;photos.</h1>
+      <p class="hero-sub">Pick a look, see it on your photo straight away, adjust it, and export one photo or a whole folder. A hundred looks, from Portra to Blade&nbsp;Runner.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg" id="hero-download" href="https://github.com/ajr-alves/emulsa/releases/latest">Download Emulsa</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/ajr-alves/emulsa">View on GitHub</a>
+      </div>
+      <p class="hero-note"><span id="hero-note">Free and open source, for Windows, macOS and Linux.</span> <a href="#download">All downloads</a></p>
+    </div>
+    <div class="wrap-wide">
+      <figure class="window">
+        <picture>
+          <source srcset="assets/img/screenshot-dark.webp" media="(prefers-color-scheme: dark)">
+          <img src="assets/img/screenshot.webp" width="1440" height="900" alt="The Emulsa window: a list of looks on the left, a photo of an espresso cup in the Kodak Portra 400 look in the middle, and sliders for light, colour and film on the right.">
+        </picture>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="try" aria-labelledby="try-title">
+    <div class="wrap">
+      <div class="section-head split-head">
+        <div>
+          <h2 id="try-title">Try it on a photo.</h2>
+          <p class="lede">These are Emulsa’s own looks, rendered by the app’s engine. Drag across the photo to compare with the original.</p>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Photo">
+          <button role="radio" aria-checked="false" data-photo="coffee">Coffee</button>
+          <button role="radio" aria-checked="true" data-photo="cat">Cat</button>
+          <button role="radio" aria-checked="false" data-photo="rocket">Launch pad</button>
+        </div>
+      </div>
+
+      <div class="stage" id="stage" style="--pos:50%">
+        <img class="stage-img stage-orig" id="img-orig" src="assets/img/demo/cat-original.webp" width="1400" height="931" alt="">
+        <img class="stage-img stage-look" id="img-look" src="assets/img/demo/cat-kodak-portra-400.webp" width="1400" height="931" alt="The cat photo in the Kodak Portra 400 look">
+        <div class="stage-divider" aria-hidden="true"><span class="knob"></span></div>
+        <span class="stage-tag tag-left">Original</span>
+        <span class="stage-tag tag-right" id="look-tag">Kodak Portra 400</span>
+        <input class="stage-range" id="range" type="range" min="0" max="100" value="50" aria-label="Compare with the original: drag left to show more of the look">
+      </div>
+
+      <div class="strip" id="strip" role="radiogroup" aria-label="Look">
+        <button class="frame" role="radio" aria-checked="true" data-look="kodak-portra-400" data-name="Kodak Portra 400"><img src="assets/img/demo/thumbs/cat-kodak-portra-400.webp" width="240" height="160" alt=""><span>Kodak Portra 400</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="classic-chrome" data-name="Classic Chrome"><img src="assets/img/demo/thumbs/cat-classic-chrome.webp" width="240" height="160" alt=""><span>Classic Chrome</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="cinestill-800t" data-name="Cinestill 800T"><img src="assets/img/demo/thumbs/cat-cinestill-800t.webp" width="240" height="160" alt=""><span>Cinestill 800T</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="kodak-gold-200" data-name="Kodak Gold 200"><img src="assets/img/demo/thumbs/cat-kodak-gold-200.webp" width="240" height="160" alt=""><span>Kodak Gold 200</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="blade-runner-2049-las-vegas" data-name="Blade Runner 2049 (Las Vegas)"><img src="assets/img/demo/thumbs/cat-blade-runner-2049-las-vegas.webp" width="240" height="160" alt=""><span>Blade Runner 2049 (Las Vegas)</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="the-dark-knight" data-name="The Dark Knight"><img src="assets/img/demo/thumbs/cat-the-dark-knight.webp" width="240" height="160" alt=""><span>The Dark Knight</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="teal-orange" data-name="Teal &amp; Orange"><img src="assets/img/demo/thumbs/cat-teal-orange.webp" width="240" height="160" alt=""><span>Teal &amp; Orange</span></button>
+        <button class="frame" role="radio" aria-checked="false" data-look="the-lighthouse-orthochromatic" data-name="The Lighthouse (orthochromatic)"><img src="assets/img/demo/thumbs/cat-the-lighthouse-orthochromatic.webp" width="240" height="160" alt=""><span>The Lighthouse (orthochromatic)</span></button>
+      </div>
+      <p class="hint">Tip: hold <kbd>\</kbd> to see the original, the same shortcut as in the app.</p>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="looks" aria-labelledby="looks-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="looks-title">A hundred looks to start from.</h2>
+        <p class="lede">Fujifilm simulations, Kodak, Ilford and Cinestill stocks, Ricoh GR and Leica. Grades inspired by films, from Dune to The Batman, and moods like Golden Hour and Teal&nbsp;&amp;&nbsp;Orange. In the app, every look is previewed on your own photo.</p>
+      </div>
+      <div class="chips" role="radiogroup" aria-label="Filter looks by maker">
+        <button role="radio" aria-checked="true" data-filter="all">All<span class="count">100</span></button>
+        <button role="radio" aria-checked="false" data-filter="movies">Movies<span class="count">15</span></button>
+        <button role="radio" aria-checked="false" data-filter="moods">Moods<span class="count">8</span></button>
+        <button role="radio" aria-checked="false" data-filter="fujifilm">Fujifilm<span class="count">21</span></button>
+        <button role="radio" aria-checked="false" data-filter="kodak">Kodak<span class="count">14</span></button>
+        <button role="radio" aria-checked="false" data-filter="ilford">Ilford<span class="count">5</span></button>
+        <button role="radio" aria-checked="false" data-filter="cinema">Cinema<span class="count">4</span></button>
+        <button role="radio" aria-checked="false" data-filter="ricoh">Ricoh GR<span class="count">8</span></button>
+        <button role="radio" aria-checked="false" data-filter="leica">Leica<span class="count">4</span></button>
+        <button role="radio" aria-checked="false" data-filter="more">More<span class="count">21</span></button>
+      </div>
+      <ul class="grid collapsed" id="grid">
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/dune-arrakis.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Dune (Arrakis)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/provia.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Provia</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-portra-160.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Portra 160</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/teal-orange.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Teal &amp; Orange</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="cinema"><img src="assets/img/looks/cinestill-50d-blue-velvet.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Cinestill 50D (Blue Velvet)</span><span class="tl-brand">Cinema</span></li>
+        <li class="tile-look" data-group="ilford"><img src="assets/img/looks/ilford-hp5.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Ilford HP5</span><span class="tl-brand">Ilford</span></li>
+        <li class="tile-look" data-group="leica"><img src="assets/img/looks/leica-contemporary.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Leica Contemporary</span><span class="tl-brand">Leica</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-positive-film.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Positive Film</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/hasselblad-hncs-natural.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Hasselblad HNCS Natural</span><span class="tl-brand">Hasselblad</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/blade-runner-2049-las-vegas.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Blade Runner 2049 (Las Vegas)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/velvia.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Velvia</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-portra-400.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Portra 400</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/golden-hour.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Golden Hour</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="cinema"><img src="assets/img/looks/cinestill-800t.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Cinestill 800T</span><span class="tl-brand">Cinema</span></li>
+        <li class="tile-look" data-group="ilford"><img src="assets/img/looks/ilford-fp4.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Ilford FP4</span><span class="tl-brand">Ilford</span></li>
+        <li class="tile-look" data-group="leica"><img src="assets/img/looks/leica-classic.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Leica Classic</span><span class="tl-brand">Leica</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-negative-film.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Negative Film</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/canon-standard.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Canon Standard</span><span class="tl-brand">Canon and Nikon</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-dark-knight.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Dark Knight</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/astia.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Astia</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-portra-800.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Portra 800</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/matte-moody.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Matte Moody</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="cinema"><img src="assets/img/looks/classic-cinema.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Classic Cinema</span><span class="tl-brand">Cinema</span></li>
+        <li class="tile-look" data-group="ilford"><img src="assets/img/looks/ilford-delta-100.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Ilford Delta 100</span><span class="tl-brand">Ilford</span></li>
+        <li class="tile-look" data-group="leica"><img src="assets/img/looks/leica-eternal.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Leica Eternal</span><span class="tl-brand">Leica</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-bleach-bypass.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Bleach Bypass</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/canon-portrait.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Canon Portrait</span><span class="tl-brand">Canon and Nikon</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/oppenheimer-black-white.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Oppenheimer (black &amp; white)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/classic-chrome.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Classic Chrome</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-gold-200.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Gold 200</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/neon-night.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Neon Night</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="cinema"><img src="assets/img/looks/rec709-video-flat-ish.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Rec709 Video (flat-ish)</span><span class="tl-brand">Cinema</span></li>
+        <li class="tile-look" data-group="ilford"><img src="assets/img/looks/ilford-delta-3200.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Ilford Delta 3200</span><span class="tl-brand">Ilford</span></li>
+        <li class="tile-look" data-group="leica"><img src="assets/img/looks/leica-monochrom.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Leica Monochrom</span><span class="tl-brand">Leica</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-retro.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Retro</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/canon-faithful.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Canon Faithful</span><span class="tl-brand">Canon and Nikon</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-brutalist.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Brutalist</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/classic-negative.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Classic Negative</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-ultra-max-400.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Ultra Max 400</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/airy-bright.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Airy Bright</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="ilford"><img src="assets/img/looks/ilford-pan-f-50.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Ilford Pan F 50</span><span class="tl-brand">Ilford</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-cross-process.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Cross Process</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/nikon-flat.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Nikon Flat</span><span class="tl-brand">Canon and Nikon</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-shining-overlook.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Shining (Overlook)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/nostalgic-neg.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Nostalgic Neg</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-color-plus-200.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Color Plus 200</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/nordic-cold.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Nordic Cold</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-hi-contrast-b-w.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Hi-Contrast B&amp;W</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/nikon-vivid.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Nikon Vivid</span><span class="tl-brand">Canon and Nikon</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/there-will-be-blood.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">There Will Be Blood</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/reala-ace.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Reala Ace</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-ektar-100.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Ektar 100</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/sun-bleached.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sun-Bleached</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-hard-monotone.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Hard Monotone</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/pana-l-monochrome-d.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Pana L.Monochrome D</span><span class="tl-brand">Panasonic and Olympus</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-lighthouse-orthochromatic.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Lighthouse (orthochromatic)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/pro-neg-std.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Pro Neg Std</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-ektachrome-e100.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Ektachrome E100</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="moods"><img src="assets/img/looks/film-noir.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Film Noir</span><span class="tl-brand">Moods</span></li>
+        <li class="tile-look" data-group="ricoh"><img src="assets/img/looks/gr-soft-monotone.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">GR Soft Monotone</span><span class="tl-brand">Ricoh GR</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/pana-l-classicneo.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Pana L.ClassicNeo</span><span class="tl-brand">Panasonic and Olympus</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/se7en.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Se7en</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/pro-neg-hi.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Pro Neg Hi</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodachrome-64.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodachrome 64</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/olympus-pop-art.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Olympus Pop Art</span><span class="tl-brand">Panasonic and Olympus</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-grand-budapest-hotel.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Grand Budapest Hotel</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/eterna.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Eterna</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-vision3-500t-daylight.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Vision3 500T (daylight)</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/olympus-pale-light.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Olympus Pale &amp; Light</span><span class="tl-brand">Panasonic and Olympus</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/all-quiet-on-the-western-front.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">All Quiet on the Western Front</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/eterna-bleach-bypass.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Eterna Bleach Bypass</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-vision-200t-asteroid-city.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Vision 200T (Asteroid City)</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/agfa-vista-200.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Agfa Vista 200</span><span class="tl-brand">Other film</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-wind-rises-summer-sky.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Wind Rises (summer sky)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/acros.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Acros</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-tri-x-400.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Tri-X 400</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/agfa-ultra-100.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Agfa Ultra 100</span><span class="tl-brand">Other film</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/pulp-fiction.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Pulp Fiction</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/acros-ye-yellow-filter.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Acros +Ye (yellow filter)</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-t-max.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak T-Max</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/polaroid-instax.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Polaroid / Instax</span><span class="tl-brand">Other film</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/nosferatu-moonlight.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Nosferatu (moonlight)</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/acros-r-red-filter.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Acros +R (red filter)</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="kodak"><img src="assets/img/looks/kodak-tri-x-1600-pushed.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Kodak Tri-X 1600 (pushed)</span><span class="tl-brand">Kodak</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/factory-st.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony Standard</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="movies"><img src="assets/img/looks/the-batman.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">The Batman</span><span class="tl-brand">Movies</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/acros-g-green-filter.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Acros +G (green filter)</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-pt-portrait.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony PT (portrait)</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/sepia.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sepia</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-nt-neutral.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony NT (neutral)</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/fuji-pro-400h.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Fuji Pro 400H</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-vv-vivid.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony VV (vivid)</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/fuji-fortia-50.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Fuji Fortia 50</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-vv2.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony VV2</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/fuji-superia-400.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Fuji Superia 400</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-fl-film-like.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony FL (film-like)</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/fuji-c200.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Fuji C200</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-in-instant.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony IN (instant)</span><span class="tl-brand">Sony</span></li>
+        <li class="tile-look" data-group="fujifilm"><img src="assets/img/looks/fuji-natura-1600.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Fuji Natura 1600</span><span class="tl-brand">Fujifilm</span></li>
+        <li class="tile-look" data-group="more"><img src="assets/img/looks/sony-sh-soft-high-key.webp" width="420" height="280" alt="" loading="lazy" decoding="async"><span class="tl-name">Sony SH (soft high-key)</span><span class="tl-brand">Sony</span></li>
+      </ul>
+      <div class="grid-more">
+        <button class="btn btn-ghost" id="show-all" aria-controls="grid">Show all 100 looks</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="features-title">Everything in one quiet window.</h2>
+        <p class="lede">Open a photo, a few, or a whole folder. Emulsa does the rest without getting in your way.</p>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <h3>Works with your files</h3>
+          <p>JPEG, PNG, TIFF and RAW from Sony, Canon, Nikon, Fujifilm and others, including DNG. Your originals are never changed.</p>
+        </div>
+        <div class="feature">
+          <h3>Zoom to full detail</h3>
+          <p>Scroll or pinch to zoom, drag to move around. The look is applied at full resolution, RAW included.</p>
+        </div>
+        <div class="feature">
+          <h3>Make a look your own</h3>
+          <p>Exposure, contrast, highlights, shadows, faded blacks, temperature, tint, saturation, grain and vignette. Save your versions and star favourites.</p>
+        </div>
+        <div class="feature">
+          <h3>Export a whole folder</h3>
+          <p>JPEG, TIFF or PNG, at full size or resized. EXIF data from JPEGs is kept.</p>
+        </div>
+        <div class="feature">
+          <h3>Take a look anywhere</h3>
+          <p>Save any look as a .cube LUT for DaVinci Resolve, Premiere, Final Cut or OBS.</p>
+        </div>
+        <div class="feature">
+          <h3>Light and dark</h3>
+          <p>Emulsa follows your system appearance, and gets out of the way of your photo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="assistant" aria-labelledby="assistant-title">
+    <div class="wrap assistant">
+      <div class="assistant-copy">
+        <h2 id="assistant-title">Describe a look. See it on your photo.</h2>
+        <p class="lede">Type something like “warm 70s film, faded blacks”, or attach a photo whose colours you like. The look assistant builds it on your photo. Undo it, or save it as your own.</p>
+        <p class="fine">The assistant runs on Claude with your own Anthropic API key, usually a few cents per message. Your key is kept in your system’s keychain, and your photo is only sent when you press Send.</p>
+      </div>
+      <div class="chat" aria-hidden="true">
+        <img class="chat-photo" src="assets/img/demo/thumbs/coffee-kodak-gold-200.webp" width="240" height="160" alt="" loading="lazy">
+        <div class="bubble bubble-user">warm 70s film, faded blacks</div>
+        <div class="bubble bubble-bot">Warmer midtones, softer contrast and lifted blacks, with a little grain. Here it is on your photo.</div>
+        <div class="look-card">
+          <div>
+            <strong>Warm 70s fade</strong>
+            <span>Temperature +18, faded blacks +0.06, grain 0.22</span>
+          </div>
+          <span class="look-card-btn">Save look</span>
+        </div>
+        <div class="chat-input">Describe a look…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="trust" aria-labelledby="trust-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="trust-title">Private by default.</h2>
+      </div>
+      <div class="trust">
+        <div>
+          <h3>Your photos stay with you</h3>
+          <p>Everything happens on your computer. Nothing is uploaded unless you message the assistant, and then only a 1024&nbsp;px copy.</p>
+        </div>
+        <div>
+          <h3>Free and open source</h3>
+          <p>MIT licence. Every line is on GitHub to read, build or change.</p>
+        </div>
+        <div>
+          <h3>Checked on every build</h3>
+          <p>Unit tests, a security scan of the code and a check of every dependency run before each release.</p>
+        </div>
+        <div>
+          <h3>Updates you choose</h3>
+          <p>Emulsa tells you when a new version is out. It never downloads or installs anything by itself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint" id="download" aria-labelledby="download-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="download-title">Download Emulsa.</h2>
+        <p class="lede">Version <span data-version>0.6.0</span>. Free, with no account and no ads. Your favourites and custom looks are kept when you update.</p>
+      </div>
+      <ul class="downloads">
+        <li class="dl" data-os="windows">
+          <div class="dl-os">
+            <h3>Windows</h3>
+            <p>Windows 10 or 11, 64-bit</p>
+          </div>
+          <p class="dl-file"><span data-name>EmulsaSetup-0.6.0.exe</span><span class="dl-size" data-size>55 MB</span></p>
+          <a class="btn btn-primary" data-link href="https://github.com/ajr-alves/emulsa/releases/download/v0.6.0/EmulsaSetup-0.6.0.exe">Download for Windows</a>
+        </li>
+        <li class="dl" data-os="mac">
+          <div class="dl-os">
+            <h3>macOS</h3>
+            <p>macOS 11 or later, Apple silicon</p>
+          </div>
+          <p class="dl-file"><span data-name>Emulsa-0.6.0-macOS-arm64.dmg</span><span class="dl-size" data-size>65 MB</span></p>
+          <a class="btn btn-primary" data-link href="https://github.com/ajr-alves/emulsa/releases/download/v0.6.0/Emulsa-0.6.0-macOS-arm64.dmg">Download for Mac</a>
+        </li>
+        <li class="dl" data-os="linux">
+          <div class="dl-os">
+            <h3>Linux</h3>
+            <p>x86-64 AppImage</p>
+          </div>
+          <p class="dl-file"><span data-name>Emulsa-0.6.0-x86_64.AppImage</span><span class="dl-size" data-size>111 MB</span></p>
+          <a class="btn btn-primary" data-link href="https://github.com/ajr-alves/emulsa/releases/download/v0.6.0/Emulsa-0.6.0-x86_64.AppImage">Download for Linux</a>
+        </li>
+      </ul>
+
+      <div class="faq">
+        <details>
+          <summary>Windows says it protected my PC</summary>
+          <p>Emulsa isn’t signed with a paid developer certificate yet, so Windows doesn’t recognise it. Click <b>More info</b>, then <b>Run anyway</b>. You only need to do this once.</p>
+        </details>
+        <details>
+          <summary>macOS won’t open it the first time</summary>
+          <p>Drag Emulsa to Applications and open it. When macOS blocks it, go to <b>System Settings → Privacy &amp; Security</b> and click <b>Open Anyway</b>. Intel Macs can run Emulsa from source.</p>
+        </details>
+        <details>
+          <summary>The Linux AppImage won’t start</summary>
+          <p>Make it executable with <code>chmod +x Emulsa-*.AppImage</code>. If it still won’t start, install <code>libxcb-cursor0</code> on Ubuntu or Debian, or <code>xcb-util-cursor</code> on Fedora or Arch.</p>
+        </details>
+        <details>
+          <summary>How do I update?</summary>
+          <p>Emulsa checks for a new version once a day and shows a notice with a Download button. Install the new version over the old one; there’s no need to uninstall first. You can also check any time from the <b>•••</b> menu.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section thanks" aria-labelledby="thanks-title">
+    <div class="wrap thanks-inner">
+      <h2 id="thanks-title">Built on Recipe Lab.</h2>
+      <p>Emulsa started from the 77 in-camera recipes in <a href="https://github.com/voxivoid/recipe-lab-sony-pmca">Recipe Lab</a> by <a href="https://github.com/voxivoid">André&nbsp;Domingues</a>, who worked out how to store film looks inside the Sony A6000 and tested each one against reference frames. Emulsa turns those recipes into colour grades for any photo from any camera. If you shoot an older Sony, use Recipe Lab on the camera, and consider <a href="https://github.com/sponsors/voxivoid">sponsoring his work</a>.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <a class="brand" href="#top" aria-label="Back to top">
+        <img src="assets/img/mark.svg" alt="" width="24" height="24">
+        <span class="wordmark">emulsa</span>
+      </a>
+      <p>Film looks for your photos.</p>
+    </div>
+    <nav class="footer-links" aria-label="Project">
+      <a href="https://github.com/ajr-alves/emulsa">Source code</a>
+      <a href="https://github.com/ajr-alves/emulsa/blob/main/CHANGELOG.md">What’s new</a>
+      <a href="https://github.com/ajr-alves/emulsa/issues">Report a problem</a>
+      <a href="https://github.com/ajr-alves/emulsa/blob/main/LICENSE">MIT licence</a>
+    </nav>
+    <p class="footer-fine">Film and camera names describe the look each preset approximates, and film titles name the movie whose colour a look is inspired by. Emulsa isn’t affiliated with or endorsed by Fujifilm, Kodak, Ilford, Cinestill, Ricoh, Leica, Hasselblad, Canon, Nikon, Panasonic, Olympus, Agfa, Polaroid or Sony, or by the makers of any film named here. Sample photos: espresso by Rachel Michetti and cat by Stefan van der Walt (both CC0), launch pad by SpaceX (public domain). Wordmark set in Bricolage Grotesque (SIL Open Font License).</p>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>
